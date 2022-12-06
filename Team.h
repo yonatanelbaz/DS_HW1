@@ -18,7 +18,7 @@ private:
     int gamesPlayed;
     AVLTree<std::shared_ptr<Player>> *playersById;
     AVLTree<std::shared_ptr<Player>> *playersByGoals;
-    std::shared_ptr<Player> topScorer;
+    std::weak_ptr<Player> topScorer;
 
 public:
     explicit Team(int teamId, int points);

@@ -15,9 +15,10 @@ private:
     int goals;
     int cardsReceived;
     bool goalKeeper;
-    std::shared_ptr<Team> player_team;
-    std::shared_ptr<Player> closest_above;
-    std::shared_ptr<Player> closest_below;
+    std::weak_ptr<Team> player_team;
+    std::weak_ptr<Player> closest_above;
+    std::weak_ptr<Player> closest_below;
+
 public:
     static int compare_playerID(const std::shared_ptr<Player> &a, const std::shared_ptr<Player> &b);
     static int compare_playerGoals(const std::shared_ptr<Player> &player1, const std::shared_ptr<Player> &player2);
@@ -42,7 +43,7 @@ public:
     void setGamesPlayed(int games);
     void setGoalKeeper(bool goalKeeper);
     Player()=default;
-    ~Player() = default;
+    ~Player()=defult;
 };
 
 #endif //DATA_STRUCTURES_1_PLAYER_H

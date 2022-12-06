@@ -16,8 +16,48 @@ world_cup_t::world_cup_t():
 
 world_cup_t::~world_cup_t()
 {
-	// TODO: Your code goes here
+    remove_all_players(*playersIdTree.GetRoot());
+
+    remove_all_teams(*teamsTree.GetRoot());
+
+    remove_all_teams(*validTeamsTree.GetRoot());
+
+    delete playersIdTree.GetRoot();
+    delete playerGoalsTree.GetRoot();
+    delete teamsTree.GetRoot();
+    delete validTeamsTree.GetRoot();
+
 }
+
+StatusType world_cup_t::remove_all_teams(const AVLNode<shared_ptr<Team>>& node){
+    if (node.GetValue() && node.GetLeft()) {
+        remove_all_teams(*node.GetLeft());
+    }
+    StatusType result = remove_team(node.GetValue() -> getTeamId());
+    if (result != StatusType::SUCCESS) {return result;}
+
+    if (node.GetValue() && node.GetRight()) {
+        remove_all_teams(*node.GetRight());
+    }
+    return result;
+}
+
+StatusType world_cup_t::remove_all_players(const AVLNode<shared_ptr<Player>>& node){
+
+
+        if (node.GetValue() && node.GetLeft()) {
+            remove_all_players(*node.GetLeft());
+        }
+        StatusType result = remove_player(node.GetValue() -> getPlayerId());
+        if (result != StatusType::SUCCESS) {return result;}
+
+        if (node.GetValue() && node.GetRight()) {
+            remove_all_players(*node.GetRight());
+        }
+        return result;
+
+}
+
 
 
 // TODO : Nothing Elbaz did already no touching!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -100,6 +140,7 @@ StatusType world_cup_t::add_to_team_trees(const std::shared_ptr<Team>& team, con
     if(Player::compare_playerGoals(this -> topScorer, player) == -1){
         this -> topScorer = player;
     }
+
     team->incNumPlayers();
     player -> updateTeam();
     //playerTeam->setSumGoals(playerTeam->getSumGoals() + goals);
@@ -183,23 +224,61 @@ StatusType world_cup_t::remove_team(int teamId) /////
 
 }
 
+/*StatusType world_cup_t::remove_from_player_tree(const std::shared_ptr<Player>& player){
+
+
+    auto playerTeam = player -> getTeam();
+    auto temp_above = player -> getClosestAbove();
+    auto temp_below = player -> getClosestBelow();
+    if(temp_above != nullptr) {temp_above -> setClosestBelow(temp_below);}
+    if(temp_below != nullptr) {temp_below -> setClosestAbove(temp_above);}
+    bool removed = playersIdTree.Remove(player);
+    if(!removed) {
+        return StatusType::FAILURE;
+    }
+    removed = playerGoalsTree.Remove(player);
+    if(!removed) {
+        return StatusType::FAILURE;
+    }
+
+    return StatusType::SUCCESS;
+}*/
 //TODO: Everything that has to do with closest
 StatusType world_cup_t::remove_player(int playerId)
 {
+    bool removed;
     if(playerId<=0) {
         return StatusType::INVALID_INPUT;
     }
     try{
         std::shared_ptr<Player> tempPlayer = std::shared_ptr<Player>(new Player(playerId, 0, 0, 0, false));
         auto tempPlayerNode = this ->playersIdTree.Find(tempPlayer);
-        if(tempPlayerNode== nullptr) {
+
+        if(tempPlayerNode == nullptr) {
             return StatusType::FAILURE;
         }
-        this->playersIdTree.Remove(tempPlayer);
-        this->playerGoalsTree.Remove(tempPlayer);
-        tempPlayerNode->GetValue()->getTeam()->getPlayersById()->Remove(tempPlayer);
-        tempPlayerNode->GetValue()->getTeam()->getPlayersByGoals()->Remove(tempPlayer);
-        if(tempPlayerNode->GetValue()->getClosestAbove()== nullptr) {
+        tempPlayer = tempPlayerNode -> GetValue();
+        auto playerTeam = tempPlayer -> getTeam();
+
+        removed = this->playersIdTree.Remove(tempPlayer);
+        if(!removed) {return StatusType::FAILURE;}
+
+        removed = this->playerGoalsTree.Remove(tempPlayer);
+        if(!removed) {return StatusType::FAILURE;}
+
+        removed = playerTeam->getPlayersById()->Remove(tempPlayer);
+        if(!removed) {return StatusType::FAILURE;}
+
+        removed = playerTeam->getPlayersByGoals()->Remove(tempPlayer);
+        if(!removed) {return StatusType::FAILURE;}
+
+
+        auto temp_above = tempPlayer -> getClosestAbove();
+        auto temp_below = tempPlayer -> getClosestBelow();
+        if(temp_above != nullptr) {temp_above -> setClosestBelow(temp_below);}
+        if(temp_below != nullptr) {temp_below -> setClosestAbove(temp_above);}
+
+        /*if(tempPlayerNode->GetValue()->getClosestAbove()== nullptr) {
                 if(tempPlayerNode->GetValue()->getClosestBelow()!=nullptr) {
                     tempPlayerNode->GetValue()->getClosestBelow()->setClosestAbove(nullptr);
                 }
@@ -211,24 +290,28 @@ StatusType world_cup_t::remove_player(int playerId)
                 tempPlayerNode->GetValue()->getClosestAbove()->setClosestBelow(tempPlayerNode->GetValue()->getClosestBelow());
                 tempPlayerNode->GetValue()->getClosestBelow()->setClosestAbove(tempPlayerNode->GetValue()->getClosestAbove());
             }
-        }
+        }*/
+
         //////I don't check if they appear in each tree because they should
-        if(this->topScorer->getPlayerId()==tempPlayer->getPlayerId()) {
+        if(this->topScorer->getPlayerId() == tempPlayer -> getPlayerId()) {
             this->topScorer  = (this->playerGoalsTree.FindMaxValInTree(this->playerGoalsTree.GetRoot()))->GetValue();
+            this -> topScorer = tempPlayer -> getClosestBelow();
         }
+
        // auto tempPlayerNode = this -> playersIdTree.Find(tempPlayer);
         if(tempPlayerNode->GetValue()->getGoalKeeper()) {
-            tempPlayerNode->GetValue()->getTeam()->decGoalKeepers();
+            playerTeam->decGoalKeepers();
         }
-        if(tempPlayerNode->GetValue()->getTeam()->getNumPlayers()<PLAYERS || tempPlayerNode->GetValue()->getTeam()->getGoalkeepers()==0) {
-            tempPlayerNode->GetValue()->getTeam()->setTeamValid(false);
-            this->validTeamsTree.Remove(tempPlayerNode->GetValue()->getTeam());
+
+        playerTeam->decNumPlayers();
+        if(playerTeam->getNumPlayers()<PLAYERS || playerTeam -> getGoalkeepers() == 0) {
+            playerTeam->setTeamValid(false);
+            this->validTeamsTree.Remove(playerTeam);
         }
-        tempPlayerNode->GetValue()->getTeam()->decNumPlayers();
-        tempPlayerNode->GetValue()->getTeam()->setSumCards(tempPlayerNode->GetValue()->getTeam()->getSumCards()-tempPlayerNode->GetValue()->getCards());
-        tempPlayerNode->GetValue()->getTeam()->setSumGoals(tempPlayerNode->GetValue()->getTeam()->getSumGoals()-tempPlayerNode->GetValue()->getPlayerGoals());
-        if(tempPlayerNode->GetValue()->getTeam()->getTopScorer()->getPlayerId()==tempPlayer->getPlayerId())  {
-            (tempPlayerNode->GetValue()->getTeam()->setTopScorer((tempPlayerNode->GetValue()->getTeam()->getPlayersByGoals()->FindMaxValInTree(tempPlayerNode->GetValue()->getTeam()->getPlayersByGoals()->GetRoot())->GetValue())));
+        playerTeam->setSumCards(playerTeam->getSumCards()-tempPlayerNode->GetValue()->getCards());
+        playerTeam->setSumGoals(playerTeam->getSumGoals()-tempPlayerNode->GetValue()->getPlayerGoals());
+        if(playerTeam->getTopScorer()->getPlayerId()==tempPlayer->getPlayerId())  {
+            (playerTeam->setTopScorer((playerTeam->getPlayersByGoals()->FindMaxValInTree(playerTeam->getPlayersByGoals()->GetRoot())->GetValue())));
         }
         this->sumPlayers--;
     }
@@ -236,12 +319,12 @@ StatusType world_cup_t::remove_player(int playerId)
         return StatusType::ALLOCATION_ERROR;
     }
 
-
     // TODO: Your code goes here
     return StatusType::SUCCESS;
 }
 
 
+// TODO : Nothing Elbaz did already no touching!!!!!!!!!!!!!!!!!!!!!!!!!
 StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
                                             int scoredGoals, int cardsReceived)
 {
@@ -261,16 +344,19 @@ StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
         result = remove_player(playerId);
         if(result != StatusType::SUCCESS){return result;}
 
-        result = add_player(playerId, newPlayer -> getTeamId(), gamesPlayed, scoredGoals, cardsReceived, newPlayer -> getGoalKeeper());
+        result = add_to_player_trees(newPlayer);
+        if(result != StatusType::SUCCESS){return result;}
 
-        return result;
+        result = add_to_team_trees(newPlayer -> getTeam(), newPlayer);
+
     }
     catch (const std::exception& e){
         return StatusType::ALLOCATION_ERROR;
     }
+    return result;
 }
 
-/*StatusType world_cup_t::play_match(int teamId1, int teamId2)
+StatusType world_cup_t::play_match(int teamId1, int teamId2)
 {
     if(teamId1 == teamId2 || teamId1<=0 || teamId2<=0) {
         return StatusType::INVALID_INPUT;
@@ -298,7 +384,7 @@ StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
 	// TODO: Your code goes here+
     /////need to update playergame
 	return StatusType::SUCCESS;
-}*/
+}
 
 
 // TODO : Nothing Elbaz did already no touching!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -404,11 +490,11 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
         mergeArr(arr1Goals, len1, arr2Goals, len2, arr3Goals, Player::compare_playerGoals);
         mergeArr(arr1Id, len1, arr2Id, len2, arr3Id, Player::compare_playerID);
         if(newTeamId == teamId1) {
-            arrToTeam(arr1Goals, arr2Goals, tempTeamNode1->GetValue()->getPlayersByGoals());
-            arrToTeam(arr1Id, arr2Id, tempTeamNode1->GetValue()->getPlayersById());
+            arrToTeam(arr1Goals, arr2Goals, *tempTeamNode1->GetValue()->getPlayersByGoals());
+            arrToTeam(arr1Id, arr2Id, *tempTeamNode1->GetValue()->getPlayersById());
         }
         if(newTeamId == teamId2) {
-            mergeTeam(arr1Goals, arr2Goals, tempTeamNode2->GetValue());
+            mergeTeam(arr1Goals, arr2Goals);
         }
         if (tempNewTeamNode != nullptr) {
             return StatusType::FAILURE;
@@ -514,7 +600,7 @@ void world_cup_t::makePlayersList(AVLNode<std::shared_ptr<Player>>* curr, int* c
     makePlayersList(curr->GetRight(), output, index);
 
 }
-int dist(int num1, int num2) {
+int world_cup_t::dist(int num1, int num2) {
     return abs(num1-num2);
 }
 output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
@@ -528,7 +614,7 @@ output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
     try{
         shared_ptr<Team> tempTeam = shared_ptr<Team>(new Team(teamId, 0));
         auto teamNode = this ->teamsTree.Find(tempTeam);
-        if(teamNode== nullptr) {
+        if(teamNode == nullptr) {
             return StatusType::FAILURE;
         }
         std::shared_ptr<Player> tempPlayer = std::shared_ptr<Player>(new Player(playerId, 0, 0, 0, false));
@@ -537,35 +623,37 @@ output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
             return StatusType::FAILURE;
         }
         std::shared_ptr<Player> currPlayer = tempPlayerNode->GetValue();
-        if(currPlayer->getClosestAbove()== nullptr) {
-            if(currPlayer->getClosestBelow()==nullptr) {
+        auto closest_above = currPlayer->getClosestAbove();
+        auto closest_below = currPlayer->getClosestBelow();
+        if(closest_above == nullptr) {
+            if(closest_below == nullptr) {
                 return StatusType::FAILURE;
             }
-            return currPlayer->getClosestBelow()->getPlayerId();
+            return closest_below->getPlayerId();
         }
-        if(currPlayer->getClosestBelow()== nullptr) {
-            return currPlayer->getClosestAbove()->getPlayerId();
+        if(closest_below == nullptr) {
+            return closest_above->getPlayerId();
         }
-        if(dist(currPlayer->getClosestAbove()->getPlayerGoals(),currPlayer->getPlayerGoals())<dist(currPlayer->getClosestBelow()->getPlayerGoals(),currPlayer->getPlayerGoals()))  {
-            return currPlayer->getClosestAbove()->getPlayerId();
+        if(dist(closest_above->getPlayerGoals(),currPlayer->getPlayerGoals())<dist(closest_below->getPlayerGoals(),currPlayer->getPlayerGoals()))  {
+            return closest_above->getPlayerId();
         }
-        if(dist(currPlayer->getClosestAbove()->getPlayerGoals(),currPlayer->getPlayerGoals())>dist(currPlayer->getClosestBelow()->getPlayerGoals(),currPlayer->getPlayerGoals())) {
-            return currPlayer->getClosestBelow()->getPlayerId();
+        if(dist(closest_above->getPlayerGoals(),currPlayer->getPlayerGoals())>dist(closest_below->getPlayerGoals(),currPlayer->getPlayerGoals())) {
+            return closest_below->getPlayerId();
         }
         //////they have the same goal distance
-        if(dist(currPlayer->getClosestAbove()->getCards(),currPlayer->getCards())<dist(currPlayer->getClosestBelow()->getCards(),currPlayer->getCards()))  {
-            return currPlayer->getClosestAbove()->getPlayerId();
+        if(dist(closest_above->getCards(),currPlayer->getCards())<dist(closest_below->getCards(),currPlayer->getCards()))  {
+            return closest_above->getPlayerId();
         }
-        if(dist(currPlayer->getClosestAbove()->getCards(),currPlayer->getCards())>dist(currPlayer->getClosestBelow()->getCards(),currPlayer->getCards()))  {
-            return currPlayer->getClosestBelow()->getPlayerId();
+        if(dist(closest_above->getCards(),currPlayer->getCards())>dist(closest_below->getCards(),currPlayer->getCards()))  {
+            return closest_below->getPlayerId();
         }
-        if(dist(currPlayer->getClosestAbove()->getPlayerId(), currPlayer->getPlayerId())<dist(currPlayer->getClosestBelow()->getPlayerId(), currPlayer->getPlayerId())) {
-            return currPlayer->getClosestAbove()->getPlayerId();
+        if(dist(closest_above->getPlayerId(), currPlayer->getPlayerId())<dist(closest_below->getPlayerId(), currPlayer->getPlayerId())) {
+            return closest_above->getPlayerId();
         }
-        if(dist(currPlayer->getClosestAbove()->getPlayerId(), currPlayer->getPlayerId())>dist(currPlayer->getClosestBelow()->getPlayerId(), currPlayer->getPlayerId())) {
-            return currPlayer->getClosestBelow()->getPlayerId();
+        if(dist(closest_above->getPlayerId(), currPlayer->getPlayerId())>dist(closest_below->getPlayerId(), currPlayer->getPlayerId())) {
+            return closest_below->getPlayerId();
         }
-        return max(currPlayer->getClosestAbove()->getPlayerId(), currPlayer->getClosestBelow()->getPlayerId());
+        return max(closest_above->getPlayerId(), closest_below->getPlayerId());
     }
     catch(const std::exception& e) {
         return StatusType::ALLOCATION_ERROR;

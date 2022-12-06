@@ -78,7 +78,6 @@ public:
 
     explicit AVLTree(int (*comp)(const T &a, const T &b)) : root(nullptr), compare(comp) {}
 
-    //explicit AVLTree() = delete;
     ~AVLTree();//TODO- change to correct destructure
 
     AVLNode<T> *RemoveBinary(AVLNode<T> *to_delete, const T& value);
@@ -186,6 +185,7 @@ AVLNode<T> *AVLNode<T>::GetGreateParentAux(AVLNode<T> *node) {
 
 template<class T>
 AVLNode<T>::~AVLNode() {
+    delete data;
     delete left_son;
     delete right_son;
 }
@@ -592,7 +592,7 @@ AVLNode<T> *AVLTree<T>::FindMaxValInTree(AVLNode<T> *node) {
 
 
 template<class T>
-AVLTree<T>::~AVLTree() {
+AVLTree<T>::~AVLTree(){
     delete root;
 }
 

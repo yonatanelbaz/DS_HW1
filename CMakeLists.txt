@@ -4,6 +4,7 @@ project(DS_HW1)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(DS_HW1
+        main.cpp
         AVLTtree.h
         Player.h
         Player.cpp

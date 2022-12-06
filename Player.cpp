@@ -16,7 +16,7 @@ Player::Player(const Player& other){
 }
 
 int Player::getTeamId(){
-    return this-> player_team -> getTeamId();
+    return this-> player_team.lock() -> getTeamId();
 }
 int Player::getGamesPlayed() {
     return this->gamesPlayed;
@@ -49,8 +49,8 @@ void Player::update(int gamesPlayed, int scoredGoals, int cardsReceived) {
 }
 
 void Player::updateTeam() {
-    this->player_team->setSumCards(this->player_team->getSumCards() + this->cardsReceived);
-    this->player_team->setSumGoals(this->player_team->getSumGoals() + this->goals);
+    this->player_team.lock()->setSumCards(this->player_team.lock()->getSumCards() + this->cardsReceived);
+    this->player_team.lock()->setSumGoals(this->player_team.lock()->getSumGoals() + this->goals);
 }
 
 int Player::compare_playerID(const std::shared_ptr<Player> &player1, const std::shared_ptr<Player> &player2) {
@@ -82,22 +82,22 @@ int Player::compare_playerCards(const std::shared_ptr<Player> &player1, const st
     int player2_cards = player2->getCards();
 
     if (player1_cards > player2_cards)
-        return 1;
+        return -1;
     else if (player1_cards == player2_cards)
         return compare_playerID(player1, player2);
     else
-        return -1;
+        return 1;
 }
 
 std::shared_ptr<Team> Player::getTeam(){
-    return player_team;
+    return player_team.lock();
 }
 
 std::shared_ptr<Player> Player::getClosestBelow(){
-    return closest_below;
+    return closest_below.lock();
 }
 std::shared_ptr<Player> Player::getClosestAbove(){
-    return closest_above;
+    return closest_above.lock();
 }
 
 void Player::setClosestBelow(const std::shared_ptr<Player>& player){
