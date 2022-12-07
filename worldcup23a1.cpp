@@ -211,6 +211,8 @@ StatusType world_cup_t::remove_team(int teamId) /////
             return StatusType::FAILURE;
         }
         removed = teamsTree.Remove(tempTeam);
+        delete tempTeam.get();
+
 
         if(removed) {
             return StatusType::SUCCESS;
@@ -456,6 +458,7 @@ void world_cup_t::playersToArr(AVLNode<std::shared_ptr<Player>>* curr, std::shar
     index++;
     playersToArr(curr->GetRight(), arr, index);
 }
+
 void world_cup_t::arrToTeam(std::shared_ptr<Player> arr1Id, std::shared_ptr<Player> arr2Id, std::shared_ptr<Team> teamToInsert) {
 
 }
