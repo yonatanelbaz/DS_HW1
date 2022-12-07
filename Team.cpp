@@ -106,4 +106,12 @@ void Team::decNumPlayers() {
 void Team::decGoalKeepers() {
     this->goalKeepers--;
 }
+
+void Team::setPlayersByGoals(AVLTree<std::shared_ptr<Player>>* playersByGoals) {
+    this->playersByGoals = playersByGoals;
+}
+
+void Team::setPlayersById(AVLTree<std::shared_ptr<Player>>* playersById) {
+    this->playersById = playersById;
+}
 #endif

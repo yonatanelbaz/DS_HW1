@@ -45,6 +45,10 @@ public:
     int getGoalkeepers();
     void setGoalkeepers(int num);
     void incGoalKeepers();
+
+    void setPlayersByGoals(AVLTree<std::shared_ptr<Player>>* playersByGoals);
+    void setPlayersById(AVLTree<std::shared_ptr<Player>>* playersById);
+
     //void update(int gamesPlayed, int scoredGoals, int cardsReceived);
     static int compare_TeamID(const std::shared_ptr<Team> &team1, const std::shared_ptr<Team> &team2);
     void setGamesPlayed(int games);

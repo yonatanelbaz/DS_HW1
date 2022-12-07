@@ -111,3 +111,7 @@ void Player::setGamesPlayed(int games){
     this -> gamesPlayed = games;
 }
 
+void Player::addGamesPlayed(int goals){
+    this -> goals += goals;
+}
+

@@ -49,6 +49,14 @@ cmake_ninja_workdir = C$:/Users/harel/CLionProjects/DS_HW1/cmake-build-debug/
 
 build cmake_object_order_depends_target_DS_HW1: phony || CMakeFiles/DS_HW1.dir
 
+build CMakeFiles/DS_HW1.dir/main.cpp.obj: CXX_COMPILER__DS_HW1_Debug C$:/Users/harel/CLionProjects/DS_HW1/main.cpp || cmake_object_order_depends_target_DS_HW1
+  DEP_FILE = CMakeFiles\DS_HW1.dir\main.cpp.obj.d
+  FLAGS = -g -std=gnu++11
+  OBJECT_DIR = CMakeFiles\DS_HW1.dir
+  OBJECT_FILE_DIR = CMakeFiles\DS_HW1.dir
+  TARGET_COMPILE_PDB = CMakeFiles\DS_HW1.dir\
+  TARGET_PDB = DS_HW1.pdb
+
 build CMakeFiles/DS_HW1.dir/Player.cpp.obj: CXX_COMPILER__DS_HW1_Debug C$:/Users/harel/CLionProjects/DS_HW1/Player.cpp || cmake_object_order_depends_target_DS_HW1
   DEP_FILE = CMakeFiles\DS_HW1.dir\Player.cpp.obj.d
   FLAGS = -g -std=gnu++11
@@ -81,7 +89,7 @@ build CMakeFiles/DS_HW1.dir/worldcup23a1.cpp.obj: CXX_COMPILER__DS_HW1_Debug C$:
 #############################################
 # Link the executable DS_HW1.exe
 
-build DS_HW1.exe: CXX_EXECUTABLE_LINKER__DS_HW1_Debug CMakeFiles/DS_HW1.dir/Player.cpp.obj CMakeFiles/DS_HW1.dir/Team.cpp.obj CMakeFiles/DS_HW1.dir/worldcup23a1.cpp.obj
+build DS_HW1.exe: CXX_EXECUTABLE_LINKER__DS_HW1_Debug CMakeFiles/DS_HW1.dir/main.cpp.obj CMakeFiles/DS_HW1.dir/Player.cpp.obj CMakeFiles/DS_HW1.dir/Team.cpp.obj CMakeFiles/DS_HW1.dir/worldcup23a1.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\DS_HW1.dir

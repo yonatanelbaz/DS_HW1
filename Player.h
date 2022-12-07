@@ -42,6 +42,7 @@ public:
     void setClosestAbove(const std::shared_ptr<Player>& player);
     void setGamesPlayed(int games);
     void setGoalKeeper(bool goalKeeper);
+    void addGamesPlayed(int goals);
     Player()=default;
     ~Player()=defult;
 };
