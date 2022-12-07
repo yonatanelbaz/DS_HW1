@@ -96,6 +96,8 @@ StatusType world_cup_t::add_to_player_trees(const std::shared_ptr<Player>& playe
     }
     auto dadNode = this->playerGoalsTree.FindDad(player);
 
+    /////need to add a check if dad is nullptr?
+
     if(Player::compare_playerGoals(dadNode -> GetValue(), player) == 1){
         temp_above = dadNode -> GetValue();
         temp_below = dadNode -> GetValue()-> getClosestBelow();
@@ -294,8 +296,10 @@ StatusType world_cup_t::remove_player(int playerId)
 
         //////I don't check if they appear in each tree because they should
         if(this->topScorer->getPlayerId() == tempPlayer -> getPlayerId()) {
-            this->topScorer  = (this->playerGoalsTree.FindMaxValInTree(this->playerGoalsTree.GetRoot()))->GetValue();
-            this -> topScorer = tempPlayer -> getClosestBelow();
+           //this->topScorer  = (this->playerGoalsTree.FindMaxValInTree(this->playerGoalsTree.GetRoot()))->GetValue();
+           //////check that the player hasnt been deleted
+           this -> topScorer = tempPlayer -> getClosestBelow();
+
         }
 
        // auto tempPlayerNode = this -> playersIdTree.Find(tempPlayer);
@@ -323,6 +327,7 @@ StatusType world_cup_t::remove_player(int playerId)
     return StatusType::SUCCESS;
 }
 
+////I got up to here
 
 // TODO : Nothing Elbaz did already no touching!!!!!!!!!!!!!!!!!!!!!!!!!
 StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
@@ -361,25 +366,50 @@ StatusType world_cup_t::play_match(int teamId1, int teamId2)
     if(teamId1 == teamId2 || teamId1<=0 || teamId2<=0) {
         return StatusType::INVALID_INPUT;
     }
-    shared_ptr<Team> t1 = this->teamsTree.find(teamId1);
-    if(t1 == nullptr || t1->getTeamValid() == false) {
-        return StatusType::FAILURE;
-    }
-    shared_ptr<Team> t2 = this->teamsTree.find(teamId2);
-    if(t2 == nullptr || t2->getTeamValid() ==false) {
-        return StatusType::FAILURE;
-    }
-    int result1 = t1->getPoints() + t1->getSumGoals() - t1->getSumCards();
-    int result2 = t2->getPoints() + t2->getSumGoals() - t2->getSumCards();
-    if(result1==result2) {
-        t1->setNumPoints(t1->getPoints()+TIE);
-        t2->setNumPoints(t2->getPoints()+TIE);
-    } else {
-        if(result1>result2) {
-            t1->setNumPoints(t1->getPoints()+WIN);
-        } else {
-            t2->setNumPoints(t2->getPoints()+WIN);
+    try{
+        std::shared_ptr<Team> tempTeam1 =  std::shared_ptr<Team>(new Team(teamId1, 0));
+        auto tempTeamNode1 = this -> teamsTree.Find(tempTeam1);
+        if(tempTeamNode1 == nullptr) {
+            return StatusType::FAILURE;
         }
+        std::shared_ptr<Team> team1 = tempTeamNode1->GetValue();
+
+
+        if(team1->getTeamValid() == false) {
+            return StatusType::FAILURE;
+        }
+
+
+        std::shared_ptr<Team> tempTeam2 =  std::shared_ptr<Team>(new Team(teamId2, 0));
+        auto tempTeamNode2 = this -> teamsTree.Find(tempTeam2);
+        if(tempTeamNode2 == nullptr) {
+            return StatusType::FAILURE;
+        }
+        std::shared_ptr<Team> team2 = tempTeamNode2->GetValue();
+
+
+        if(team2->getTeamValid() == false) {
+            return StatusType::FAILURE;
+        }
+
+        team1->setGamesPlayed(team1->getGamesPlayed()+1);
+        team2->setGamesPlayed(team2->getGamesPlayed()+1);
+        int result1 = team1->getPoints() + team1->getSumGoals() - team1->getSumCards();
+        int result2 = team2->getPoints() + team2->getSumGoals() - team2->getSumCards();
+        if(result1==result2) {
+            team1->setNumPoints(team1->getPoints()+TIE);
+            team2->setNumPoints(team2->getPoints()+TIE);
+        } else {
+            if(result1>result2) {
+                team1->setNumPoints(team1->getPoints()+WIN);
+            } else {
+                team2->setNumPoints(team2->getPoints()+WIN);
+            }
+        }
+
+    }
+    catch(const std::exception& e) {
+        return StatusType::ALLOCATION_ERROR;
     }
 	// TODO: Your code goes here+
     /////need to update playergame
