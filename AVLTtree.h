@@ -185,9 +185,10 @@ AVLNode<T> *AVLNode<T>::GetGreateParentAux(AVLNode<T> *node) {
 
 template<class T>
 AVLNode<T>::~AVLNode() {
-    delete data;
-    delete left_son;
+    //delete data;
+   delete left_son;
     delete right_son;
+    //this-> = nullptr;
 }
 
 template<class T>
@@ -537,6 +538,9 @@ AVLNode<T> *AVLTree<T>::FindAux(AVLNode<T> *node, const T &value) const {
 template<class T>
 AVLNode<T> *AVLTree<T>::FindDad(const T &value) const {
     AVLNode<T> *tmp = this->root;
+    if(this->root== nullptr) {
+        return nullptr;
+    }
     return FindDadAux(tmp, value);
 }
 
@@ -585,7 +589,10 @@ void AVLTree<T>::SetRoot(AVLNode<T> *new_root) {
 
 template<class T>
 AVLNode<T> *AVLTree<T>::FindMaxValInTree(AVLNode<T> *node) {
-    if (node->GetRight() == nullptr && node->GetLeft() == nullptr)
+    if(node->GetValue()== nullptr) {
+        return nullptr;
+    }
+    if (node->GetRight() == nullptr)
         return node;
     return FindMaxValInTree(node->GetRight());
 }
@@ -594,6 +601,7 @@ AVLNode<T> *AVLTree<T>::FindMaxValInTree(AVLNode<T> *node) {
 template<class T>
 AVLTree<T>::~AVLTree(){
     delete root;
+    //root = nullptr;
 }
 
 

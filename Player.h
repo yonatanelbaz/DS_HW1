@@ -44,7 +44,9 @@ public:
     void setGoalKeeper(bool goalKeeper);
     void addGamesPlayed(int goals);
     Player()=default;
-    ~Player()=defult;
+    void setPlayerTeam(const std::shared_ptr<Team>& t);
+    ////add play dtor
+     ~Player()=default;
 };
 
 #endif //DATA_STRUCTURES_1_PLAYER_H

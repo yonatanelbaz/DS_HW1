@@ -42,17 +42,19 @@ void Player::setGoalKeeper(bool goalKeeper) {
 }
 
 void Player::update(int gamesPlayed, int scoredGoals, int cardsReceived) {
-    this->gamesPlayed = gamesPlayed;
-    this->goals = goals;
-    this->cardsReceived = cardsReceived;
+    this->gamesPlayed += gamesPlayed;
+    this->goals += scoredGoals;
+    this->cardsReceived += cardsReceived;
 
 }
 
+void Player::setPlayerTeam(const std::shared_ptr<Team>& t) {
+    this->player_team = t;
+}
 void Player::updateTeam() {
     this->player_team.lock()->setSumCards(this->player_team.lock()->getSumCards() + this->cardsReceived);
     this->player_team.lock()->setSumGoals(this->player_team.lock()->getSumGoals() + this->goals);
 }
-
 int Player::compare_playerID(const std::shared_ptr<Player> &player1, const std::shared_ptr<Player> &player2) {
     int player1_id = player1->getPlayerId();
     int player2_id = player2->getPlayerId();
@@ -66,6 +68,9 @@ int Player::compare_playerID(const std::shared_ptr<Player> &player1, const std::
 }
 
 int Player::compare_playerGoals(const std::shared_ptr<Player> &player1, const std::shared_ptr<Player> &player2) {
+    if(player1== nullptr) {
+
+    }
     int player1_goals = player1->getPlayerGoals();
     int player2_goals = player2->getPlayerGoals();
 

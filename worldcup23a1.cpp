@@ -95,16 +95,16 @@ StatusType world_cup_t::add_to_player_trees(const std::shared_ptr<Player>& playe
         return StatusType::FAILURE;
     }
     auto dadNode = this->playerGoalsTree.FindDad(player);
-
     /////need to add a check if dad is nullptr?
-
-    if(Player::compare_playerGoals(dadNode -> GetValue(), player) == 1){
-        temp_above = dadNode -> GetValue();
-        temp_below = dadNode -> GetValue()-> getClosestBelow();
-    }
-    else{
-        temp_above = dadNode -> GetValue() -> getClosestAbove();
-        temp_below = dadNode -> GetValue();
+    if(dadNode!= nullptr) {
+        if(Player::compare_playerGoals(dadNode -> GetValue(), player) == 1){
+            temp_above = dadNode -> GetValue();
+            temp_below = dadNode -> GetValue()-> getClosestBelow();
+        }
+        else{
+            temp_above = dadNode -> GetValue() -> getClosestAbove();
+            temp_below = dadNode -> GetValue();
+        }
     }
     if(temp_above != nullptr) {temp_above -> setClosestBelow(player);}
     if(temp_below != nullptr) {temp_below -> setClosestAbove(player);}
@@ -135,16 +135,17 @@ StatusType world_cup_t::add_to_team_trees(const std::shared_ptr<Team>& team, con
         return ret_status;
     }
     // TODO: Your code goes here
-
-    if(Player::compare_playerGoals(team -> getTopScorer(), player) == -1){
+    if(team->getTopScorer() == nullptr || Player::compare_playerGoals(team -> getTopScorer(), player) == -1){
         team -> setTopScorer(player);
     }
-    if(Player::compare_playerGoals(this -> topScorer, player) == -1){
+    if(this->topScorer== nullptr || Player::compare_playerGoals(this -> topScorer, player) == -1){
         this -> topScorer = player;
     }
 
     team->incNumPlayers();
-    player -> updateTeam();
+//   player -> updateTeam();
+    team->setSumCards(team->getSumCards() + player->getCards());
+    team->setSumGoals(team->getSumGoals() + player->getPlayerGoals());
     //playerTeam->setSumGoals(playerTeam->getSumGoals() + goals);
     //playerTeam->setSumCards(playerTeam->getSumCards() + cards);
     player-> setGamesPlayed(player->getGamesPlayed() - team -> getGamesPlayed());
@@ -185,9 +186,8 @@ StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed, in
         if (newTeamNode == nullptr) {
             return StatusType::FAILURE;
         }
-        auto playerTeam = newTeamNode->GetValue();
-
-        ret_status = add_to_team_trees(playerTeam, newPlayer);
+        newPlayer->setPlayerTeam(newTeamNode->GetValue());
+        ret_status = add_to_team_trees(newTeamNode->GetValue(), newPlayer);
         if (ret_status != StatusType::SUCCESS) { return ret_status; }
         return StatusType::SUCCESS;
     }
@@ -209,7 +209,8 @@ StatusType world_cup_t::remove_team(int teamId) /////
         if(tempTeamNode == nullptr) {
             return StatusType::FAILURE;
         }
-        if(!tempTeamNode -> GetValue() -> getPlayersById() -> IsEmpty()) {
+        //if(!tempTeamNode -> GetValue() -> getPlayersById() -> IsEmpty()) {
+        if(tempTeamNode -> GetValue() ->getNumPlayers() >0) {
             return StatusType::FAILURE;
         }
         removed = teamsTree.Remove(tempTeam);
@@ -272,19 +273,29 @@ StatusType world_cup_t::remove_player(int playerId)
         }
 
         // auto tempPlayerNode = this -> playersIdTree.Find(tempPlayer);
-        if(tempPlayerNode->GetValue()->getGoalKeeper()) {
+        if(tempPlayer->getGoalKeeper()) {
             playerTeam->decGoalKeepers();
         }
 
         playerTeam->decNumPlayers();
-        if(playerTeam->getNumPlayers()<PLAYERS || playerTeam -> getGoalkeepers() == 0) {
+        if(playerTeam->getTeamValid() && (playerTeam->getNumPlayers()<PLAYERS || playerTeam -> getGoalkeepers() == 0)){
             playerTeam->setTeamValid(false);
             this->validTeamsTree.Remove(playerTeam);
         }
-        playerTeam->setSumCards(playerTeam->getSumCards()-tempPlayerNode->GetValue()->getCards());
-        playerTeam->setSumGoals(playerTeam->getSumGoals()-tempPlayerNode->GetValue()->getPlayerGoals());
+        playerTeam->setSumCards(playerTeam->getSumCards()-tempPlayer->getCards());
+        playerTeam->setSumGoals(playerTeam->getSumGoals()-tempPlayer->getPlayerGoals());
+        AVLNode<std::shared_ptr<Player>>* maxPlayer;
         if(playerTeam->getTopScorer()->getPlayerId()==tempPlayer->getPlayerId())  {
-            (playerTeam->setTopScorer((playerTeam->getPlayersByGoals()->FindMaxValInTree(playerTeam->getPlayersByGoals()->GetRoot())->GetValue())));
+            if(!playerTeam->getPlayersByGoals()->IsEmpty()) {
+                maxPlayer =  playerTeam->getPlayersByGoals()->FindMaxValInTree(playerTeam->getPlayersByGoals()->GetRoot());
+                if(maxPlayer!= nullptr) {
+                    playerTeam->setTopScorer((maxPlayer->GetValue()));
+                } else {
+                    playerTeam->setTopScorer(nullptr);
+                }
+            } else{
+                playerTeam->setTopScorer(nullptr);
+            }
         }
         this->sumPlayers--;
     }
@@ -314,9 +325,11 @@ StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
         }
 
 
+
         newPlayer = player-> GetValue();
         newPlayer -> update(gamesPlayed, scoredGoals, cardsReceived);
-
+        newPlayer->getTeam()->setSumCards(newPlayer->getTeam()->getSumCards()+cardsReceived);
+        newPlayer->getTeam()->setSumGoals(newPlayer->getTeam()->getSumGoals()+scoredGoals);
         result = remove_player(playerId);
         if(result != StatusType::SUCCESS){return result;}
 
@@ -496,8 +509,8 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
             validTeamsTree.Remove(team2);
         }
 
-        int num_players1 =tempTeamNode1->GetValue()->getNumPlayers();
-        int num_players2 =tempTeamNode2->GetValue()->getNumPlayers();
+        int num_players1 =team1->getNumPlayers();
+        int num_players2 =team2->getNumPlayers();
         int sum_players = num_players1 + num_players2;
         bool valid1 = team1->getTeamValid();
         bool valid2 = team2->getTeamValid();
@@ -548,10 +561,17 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 
         /*mergeArr(arr1Goals, num_players1, arr2Goals, num_players2, arr3Goals, Player::compare_playerGoals);
         mergeArr(arr1Id, num_players1, arr2Id, num_players2, arr3Id, Player::compare_playerID);*/
-
+//        AVLNode<shared_ptr<Player>>* tempp = team1->getPlayersByGoals()->GetRoot();
+        delete team1->getPlayersByGoals();
+//        team1->getPlayersByGoals()->SetRoot(nullptr);
+        delete team1->getPlayersById();
+//        team1->getPlayersById()->SetRoot(nullptr);
+        delete team2->getPlayersByGoals();
+//        team2->getPlayersByGoals()->SetRoot(nullptr);
+        delete team2->getPlayersById();
+//        team2->getPlayersById() ->SetRoot(nullptr);
         team1 -> setNumPlayers(0);
         team2 -> setNumPlayers(0);
-
         StatusType res = this -> remove_team(teamId1);
         if(res != StatusType::SUCCESS){
             return res;
@@ -716,6 +736,7 @@ output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
         if(teamNode == nullptr) {
             return StatusType::FAILURE;
         }
+        tempTeam = teamNode->GetValue();
         std::shared_ptr<Player> tempPlayer = std::shared_ptr<Player>(new Player(playerId, 0, 0, 0, false));
         auto tempPlayerNode  = tempTeam->getPlayersById()->Find(tempPlayer);
         if(tempPlayerNode == nullptr) {

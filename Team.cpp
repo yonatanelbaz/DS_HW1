@@ -7,7 +7,7 @@
 
 
 Team::Team(int teamId, int points): teamId(teamId), points(points), teamValid(false), goalKeepers(0),
-            numPlayers(0), sumCards(0), sumGoals(0),
+            numPlayers(0), sumCards(0), sumGoals(0), gamesPlayed(0),
             playersById(new AVLTree<std::shared_ptr<Player>>(Player::compare_playerID)),
             playersByGoals(new AVLTree<std::shared_ptr<Player>>(Player::compare_playerGoals)){}
 
@@ -23,6 +23,9 @@ AVLTree<std::shared_ptr<Player>>* Team::getPlayersByGoals(){
     return this->playersByGoals;
 }
 std::shared_ptr<Player> Team::getTopScorer() {
+    if(!this->topScorer.lock()) {
+        return nullptr;
+    }
     return this->topScorer.lock();
 }
 
