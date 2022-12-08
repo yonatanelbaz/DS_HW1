@@ -1,4 +1,4 @@
-"C:\Program Files\JetBrains\CLion 2021.3.4\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2021.3.4/bin/ninja/win/ninja.exe" -G Ninja C:\Users\harel\CLionProjects\DS_HW1
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_C_COMPILER=/Library/Developer/CommandLineTools/usr/bin/cc -DCMAKE_CXX_COMPILER=/Library/Developer/CommandLineTools/usr/bin/c++ -G "CodeBlocks - Unix Makefiles" /Users/yonatanelbaz/CLionProjects/DS_HW1
 -- Configuring done
 -- Generating done
--- Build files have been written to: C:/Users/harel/CLionProjects/DS_HW1/cmake-build-debug
+-- Build files have been written to: /Users/yonatanelbaz/CLionProjects/DS_HW1/cmake-build-debug

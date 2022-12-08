@@ -85,7 +85,11 @@ public:
 
     StatusType remove_all_teams(const AVLNode<shared_ptr<Team>>& node);
 
-	int dist(int num1, int num2);
+    int ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr);
+
+    void ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* arr, int index);
+
+    int dist(int num1, int num2);
 	// } </DO-NOT-MODIFY>
 };
 

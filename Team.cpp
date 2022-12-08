@@ -63,6 +63,10 @@ int Team::getGamesPlayed() {
     return this -> gamesPlayed;
 }
 
+int Team::getMatchScore(){
+    return this->points + this->sumGoals - this->sumCards;
+}
+
 //Setters
 void Team::setNumPlayers(int numPlayers) {
     this->numPlayers = numPlayers;

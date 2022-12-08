@@ -27,6 +27,7 @@ public:
     int getSumCards();
     int getSumGoals();
     int getGamesPlayed();
+    int getMatchScore();
     void decNumPlayers();
     void decGoalKeepers();
     AVLTree<std::shared_ptr<Player>>* getPlayersById();

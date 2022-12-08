@@ -381,8 +381,8 @@ StatusType world_cup_t::play_match(int teamId1, int teamId2)
 
         team1->setGamesPlayed(team1->getGamesPlayed()+1);
         team2->setGamesPlayed(team2->getGamesPlayed()+1);
-        int result1 = team1->getPoints() + team1->getSumGoals() - team1->getSumCards();
-        int result2 = team2->getPoints() + team2->getSumGoals() - team2->getSumCards();
+        int result1 = team1->getMatchScore();
+        int result2 = team2->getMatchScore();
         if(result1 == result2) {
             team1->setNumPoints(team1->getPoints()+TIE);
             team2->setNumPoints(team2->getPoints()+TIE);
@@ -443,7 +443,7 @@ output_t<int> world_cup_t::get_team_points(int teamId)
 
 }
 
-void world_cup_t::mergeArr(std::shared_ptr<Player> arr1[], int arr1Len,  std::shared_ptr<Player> arr2[], int arr2Len, std::shared_ptr<Player> arr3[], int (*comp)(const std::shared_ptr<Player> &a, const std::shared_ptr<Player> &b)) {
+/*void world_cup_t::mergeArr(std::shared_ptr<Player> arr1[], int arr1Len,  std::shared_ptr<Player> arr2[], int arr2Len, std::shared_ptr<Player> arr3[], int (*comp)(const std::shared_ptr<Player> &a, const std::shared_ptr<Player> &b)) {
 
     int i = 0, j = 0, k = 0;
 
@@ -471,7 +471,7 @@ void world_cup_t::playersToArr(AVLNode<std::shared_ptr<Player>>* curr, std::shar
     arr[index] = curr->GetValue();
     index++;
     playersToArr(curr->GetRight(), arr, index);
-}
+}*/
 
 StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 {
@@ -551,16 +551,9 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
         team2 -> getPlayersByGoals() -> ToArray(arr2Goals);
         team2 -> getPlayersById() -> ToArray(arr2Id);
 
-        /*playersToArr(tempTeamNode1->GetValue()->getPlayersByGoals()->GetRoot(),arr1Goals, 0);
-        playersToArr(tempTeamNode2->GetValue()->getPlayersByGoals()->GetRoot(),arr2Goals, 0);
-        playersToArr(tempTeamNode1->GetValue()->getPlayersById()->GetRoot(), arr1Id, 0);
-        playersToArr(tempTeamNode2->GetValue()->getPlayersById()->GetRoot(), arr2Id, 0);*/
-
         team1 -> getPlayersByGoals() -> merge(arr1Goals, arr2Goals, arr3Goals, num_players1, num_players2);
         team1 -> getPlayersById() -> merge(arr1Id, arr2Id, arr3Id, num_players1, num_players2);
 
-        /*mergeArr(arr1Goals, num_players1, arr2Goals, num_players2, arr3Goals, Player::compare_playerGoals);
-        mergeArr(arr1Id, num_players1, arr2Id, num_players2, arr3Id, Player::compare_playerID);*/
 //        AVLNode<shared_ptr<Player>>* tempp = team1->getPlayersByGoals()->GetRoot();
         delete team1->getPlayersByGoals();
 //        team1->getPlayersByGoals()->SetRoot(nullptr);
@@ -569,7 +562,7 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
         delete team2->getPlayersByGoals();
 //        team2->getPlayersByGoals()->SetRoot(nullptr);
         delete team2->getPlayersById();
-//        team2->getPlayersById() ->SetRoot(nullptr);
+//         team2->getPlayersById() ->SetRoot(nullptr);
         team1 -> setNumPlayers(0);
         team2 -> setNumPlayers(0);
         StatusType res = this -> remove_team(teamId1);
@@ -778,97 +771,106 @@ output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
     catch(const std::exception& e) {
         return StatusType::ALLOCATION_ERROR;
     }
-    // TODO: Your code goes here
-    return 1006;
+
 }
+
+int world_cup_t::ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr) {
+
+    if(curr == nullptr){
+        return 0;
+    }
+    int curr_id = curr -> GetValue()->getTeamId();
+
+    if(curr_id >= minTeamId && curr_id <= maxTeamId) {
+        return 1 + ranged_teams_count(minTeamId, maxTeamId, curr->GetLeft()) + ranged_teams_count(minTeamId, maxTeamId, curr->GetRight());
+    }
+    else if(curr_id > maxTeamId) {
+        return ranged_teams_count(maxTeamId, minTeamId, curr->GetLeft());
+    }
+    else if(minTeamId > curr_id) {
+        return ranged_teams_count(maxTeamId, minTeamId, curr->GetRight());
+    }
+    return 0;
+}
+
+void world_cup_t::ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* output, int index) {
+    if(curr == nullptr){
+        return;
+    }
+    int curr_id = curr -> GetValue()->getTeamId();
+
+    if(curr_id >= minTeamId && curr_id <= maxTeamId) {
+        output[index] = curr -> GetValue();
+        index++;
+        ranged_teams_to_arr(minTeamId, maxTeamId, curr->GetLeft(), output, index);
+        ranged_teams_to_arr(minTeamId, maxTeamId, curr->GetRight(), output, index);
+    }
+    else if(curr_id > maxTeamId) {
+        ranged_teams_to_arr(maxTeamId, minTeamId, curr->GetLeft(), output, index);
+    }
+    else if(minTeamId > curr_id) {
+        ranged_teams_to_arr(maxTeamId, minTeamId, curr->GetRight(), output, index);
+    }
+}
+
 
 output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
 {
-    // TODO: Your code goes here
+    try {
+        if (minTeamId > maxTeamId || minTeamId <= 0 || maxTeamId <= 0) {
+            return StatusType::FAILURE;
+        }
+
+        int num_teams = ranged_teams_count(minTeamId, maxTeamId, this->validTeamsTree.GetRoot());
+
+        if (num_teams == 0) {
+            return StatusType::FAILURE;
+        }
+
+        auto valid_teams_arr = new std::shared_ptr<Team>[num_teams];
+        ranged_teams_to_arr(minTeamId, maxTeamId, this->validTeamsTree.GetRoot(), valid_teams_arr, num_teams);
+
+        int *teamsId = new int[num_teams];
+        int *teams_match_score = new int[num_teams];
+
+        for (int i = 0; i < num_teams; i++) {
+            teamsId[i] = valid_teams_arr[i]->getTeamId();
+            teams_match_score[i] = valid_teams_arr[i]->getMatchScore();
+        }
+
+        delete[] valid_teams_arr;
+
+        int jumpSize = 2;
+        int index = 0;
+        int matchResult = 0;
+
+        while (jumpSize / 2 < num_teams) {
+            while (jumpSize * index + jumpSize / 2 < num_teams) {
+                matchResult = teams_match_score[index * jumpSize] - teams_match_score[index * jumpSize + jumpSize / 2];
+                teams_match_score[index * jumpSize] += teams_match_score[index * jumpSize + jumpSize / 2] + 3;
+
+                if (matchResult <= 0) {
+                    teamsId[index * jumpSize] = teamsId[index * jumpSize + jumpSize / 2];
+                }
+                index++;
+            }
+            index = 0;
+            jumpSize *= 2;
+        }
+
+        int finalId = teamsId[0];
+
+        delete[] teamsId;
+        delete[] teams_match_score;
+
+        return finalId;
+    }
+
+    catch(const std::exception& e) {
+        return StatusType::ALLOCATION_ERROR;
+    }
+
     return 2;
 }
 
-/*StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed, int goals, int cards, bool goalKeeper)
-{
-    std::shared_ptr<Player> temp_above;
-    std::shared_ptr<Player> temp_below;
-
-    if((goals<0 || gamesPlayed<0 || teamId<=0 || playerId<=0 || cards<0) || (gamesPlayed==0 && (goals>0 || cards>0))) {
-        return StatusType::INVALID_INPUT;
-    }
-    try {
-        shared_ptr<Player> newPlayer = shared_ptr<Player>(new Player(playerId, gamesPlayed, goals, cards, goalKeeper));
-        shared_ptr<Team> newTeam = shared_ptr<Team>(new Team(teamId, 0));
-
-        auto newTeamNode = this->teamsTree.Find(newTeam);
-        auto newPlayerNode = this -> playersIdTree.Find(newPlayer);
-        if (newPlayerNode != nullptr || newTeamNode == nullptr) {
-            return StatusType::FAILURE;
-        }
-        auto dadNode = this->playerGoalsTree.FindDad(newPlayer);
-
-        if(Player::compare_playerGoals(dadNode -> GetValue(), newPlayer) == 1){
-            temp_above = dadNode -> GetValue();
-            temp_below = dadNode -> GetValue()-> getClosestBelow();
-        }
-        else{
-            temp_above = dadNode -> GetValue() -> getClosestAbove();
-            temp_below = dadNode -> GetValue();
-        }
-        if(temp_above != nullptr) {temp_above -> setClosestBelow(newPlayer);}
-        if(temp_below != nullptr) {temp_below -> setClosestAbove(newPlayer);}
-        newPlayer -> setClosestAbove(temp_above);
-        newPlayer -> setClosestBelow(temp_below);
-
-
-        StatusType ret_status = this->playersIdTree.Insert(newPlayer);
-        if (ret_status != StatusType::SUCCESS) {
-            return ret_status;
-        }
-        ret_status = this->playerGoalsTree.Insert(newPlayer);
-        if (ret_status != StatusType::SUCCESS) {
-            return ret_status;
-        }
-
-        auto playerTeam = newTeamNode->GetValue();
-
-        ret_status = playerTeam -> getPlayersById() -> Insert(newPlayer);
-        if (ret_status != StatusType::SUCCESS) {
-            return ret_status;
-        }
-        ret_status = playerTeam -> getPlayersByGoals() -> Insert(newPlayer);
-        if (ret_status != StatusType::SUCCESS) {
-            return ret_status;
-        }
-        // TODO: Your code goes here
-
-        if(Player::compare_playerGoals(playerTeam -> getTopScorer(), newPlayer) == -1){
-            playerTeam -> setTopScorer(newPlayer);
-        }
-        if(Player::compare_playerGoals(this -> topScorer, newPlayer) == -1){
-            this -> topScorer = newPlayer;
-        }
-        playerTeam->incNumPlayers();
-        newPlayer -> updateTeam();
-        //playerTeam->setSumGoals(playerTeam->getSumGoals() + goals);
-        //playerTeam->setSumCards(playerTeam->getSumCards() + cards);
-        newPlayer-> setGamesPlayed(newPlayer->getGamesPlayed() - playerTeam -> getGamesPlayed());
-
-        if (goalKeeper == true) {
-            playerTeam->incGoalKeepers();
-        }
-        bool before = playerTeam->getTeamValid();
-        if (playerTeam->getNumPlayers() >= PLAYERS && playerTeam->getGoalkeepers() > 0) {
-            playerTeam->setTeamValid(true);
-        }
-        if(!before && playerTeam->getTeamValid()){
-            validTeamsTree.Insert(playerTeam);
-        }
-        this->sumPlayers++;
-        return StatusType::SUCCESS;
-    }
-    catch(const std::exception& e){
-        return StatusType:: ALLOCATION_ERROR;
-    }
-}*/
 #endif

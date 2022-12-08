@@ -53,7 +53,7 @@ public:
 
 };
 
-template<class T> //to search online!!!!!!!!!!
+template<class T>
 class AVLTree {
 
     AVLNode<T> *root;
