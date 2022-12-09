@@ -31,7 +31,7 @@ private:
     AVLTree<std::shared_ptr<Player>> playersIdTree;
     AVLTree<std::shared_ptr<Player>> playerGoalsTree;
     int sumPlayers;
-    std::shared_ptr<Player> topScorer;
+    std::weak_ptr<Player> topScorer;
 public:
 	// <DO-NOT-MODIFY> {
 	
@@ -81,13 +81,16 @@ public:
 
     StatusType add_to_team_trees(const std::shared_ptr<Team>& team, const std::shared_ptr<Player>& player);
 
-    StatusType remove_all_players(const AVLNode<shared_ptr<Player>>& node);
+    void remove_all_players(const AVLNode<shared_ptr<Player>>& node);
 
     StatusType remove_all_teams(const AVLNode<shared_ptr<Team>>& node);
 
     int ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr);
 
-    void ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* arr, int index);
+    void ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* arr, int* index);
+
+    std::shared_ptr<Player> getTopScorer();
+
 
     int dist(int num1, int num2);
 	// } </DO-NOT-MODIFY>

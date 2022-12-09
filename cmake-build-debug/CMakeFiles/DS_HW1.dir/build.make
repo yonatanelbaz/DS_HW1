@@ -69,19 +69,19 @@ include CMakeFiles/DS_HW1.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/DS_HW1.dir/flags.make
 
-CMakeFiles/DS_HW1.dir/main.cpp.o: CMakeFiles/DS_HW1.dir/flags.make
-CMakeFiles/DS_HW1.dir/main.cpp.o: ../main.cpp
-CMakeFiles/DS_HW1.dir/main.cpp.o: CMakeFiles/DS_HW1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yonatanelbaz/CLionProjects/DS_HW1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DS_HW1.dir/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DS_HW1.dir/main.cpp.o -MF CMakeFiles/DS_HW1.dir/main.cpp.o.d -o CMakeFiles/DS_HW1.dir/main.cpp.o -c /Users/yonatanelbaz/CLionProjects/DS_HW1/main.cpp
+CMakeFiles/DS_HW1.dir/main23a1.cpp.o: CMakeFiles/DS_HW1.dir/flags.make
+CMakeFiles/DS_HW1.dir/main23a1.cpp.o: ../main23a1.cpp
+CMakeFiles/DS_HW1.dir/main23a1.cpp.o: CMakeFiles/DS_HW1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yonatanelbaz/CLionProjects/DS_HW1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DS_HW1.dir/main23a1.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DS_HW1.dir/main23a1.cpp.o -MF CMakeFiles/DS_HW1.dir/main23a1.cpp.o.d -o CMakeFiles/DS_HW1.dir/main23a1.cpp.o -c /Users/yonatanelbaz/CLionProjects/DS_HW1/main23a1.cpp
 
-CMakeFiles/DS_HW1.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DS_HW1.dir/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yonatanelbaz/CLionProjects/DS_HW1/main.cpp > CMakeFiles/DS_HW1.dir/main.cpp.i
+CMakeFiles/DS_HW1.dir/main23a1.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DS_HW1.dir/main23a1.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yonatanelbaz/CLionProjects/DS_HW1/main23a1.cpp > CMakeFiles/DS_HW1.dir/main23a1.cpp.i
 
-CMakeFiles/DS_HW1.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DS_HW1.dir/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yonatanelbaz/CLionProjects/DS_HW1/main.cpp -o CMakeFiles/DS_HW1.dir/main.cpp.s
+CMakeFiles/DS_HW1.dir/main23a1.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DS_HW1.dir/main23a1.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yonatanelbaz/CLionProjects/DS_HW1/main23a1.cpp -o CMakeFiles/DS_HW1.dir/main23a1.cpp.s
 
 CMakeFiles/DS_HW1.dir/Player.cpp.o: CMakeFiles/DS_HW1.dir/flags.make
 CMakeFiles/DS_HW1.dir/Player.cpp.o: ../Player.cpp
@@ -127,7 +127,7 @@ CMakeFiles/DS_HW1.dir/worldcup23a1.cpp.s: cmake_force
 
 # Object files for target DS_HW1
 DS_HW1_OBJECTS = \
-"CMakeFiles/DS_HW1.dir/main.cpp.o" \
+"CMakeFiles/DS_HW1.dir/main23a1.cpp.o" \
 "CMakeFiles/DS_HW1.dir/Player.cpp.o" \
 "CMakeFiles/DS_HW1.dir/Team.cpp.o" \
 "CMakeFiles/DS_HW1.dir/worldcup23a1.cpp.o"
@@ -135,7 +135,7 @@ DS_HW1_OBJECTS = \
 # External object files for target DS_HW1
 DS_HW1_EXTERNAL_OBJECTS =
 
-DS_HW1: CMakeFiles/DS_HW1.dir/main.cpp.o
+DS_HW1: CMakeFiles/DS_HW1.dir/main23a1.cpp.o
 DS_HW1: CMakeFiles/DS_HW1.dir/Player.cpp.o
 DS_HW1: CMakeFiles/DS_HW1.dir/Team.cpp.o
 DS_HW1: CMakeFiles/DS_HW1.dir/worldcup23a1.cpp.o

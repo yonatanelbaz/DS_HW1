@@ -22,6 +22,7 @@ private:
 
 public:
     explicit Team(int teamId, int points);
+    ~Team();
     void setSumGoals(int sumGoals);
     void setSumCards(int sumCards);
     int getSumCards();

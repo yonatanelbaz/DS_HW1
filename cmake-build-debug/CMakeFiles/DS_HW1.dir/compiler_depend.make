@@ -843,7 +843,7 @@ CMakeFiles/DS_HW1.dir/Team.cpp.o: ../Team.cpp \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.0.sdk/usr/include/c++/v1/__bsd_locale_defaults.h \
   ../Player.h
 
-CMakeFiles/DS_HW1.dir/main.cpp.o: ../main.cpp \
+CMakeFiles/DS_HW1.dir/main23a1.cpp.o: ../main23a1.cpp \
   ../worldcup23a1.h \
   ../AVLTtree.h \
   ../wet1util.h \
@@ -1690,7 +1690,7 @@ CMakeFiles/DS_HW1.dir/worldcup23a1.cpp.o: ../worldcup23a1.cpp \
 
 ../worldcup23a1.h:
 
-../main.cpp:
+../main23a1.cpp:
 
 ../Team.h:
 

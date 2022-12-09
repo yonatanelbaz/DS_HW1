@@ -177,29 +177,29 @@ Team.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_HW1.dir/build.make CMakeFiles/DS_HW1.dir/Team.cpp.s
 .PHONY : Team.cpp.s
 
-main.o: main.cpp.o
-.PHONY : main.o
+main23a1.o: main23a1.cpp.o
+.PHONY : main23a1.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_HW1.dir/build.make CMakeFiles/DS_HW1.dir/main.cpp.o
-.PHONY : main.cpp.o
+main23a1.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_HW1.dir/build.make CMakeFiles/DS_HW1.dir/main23a1.cpp.o
+.PHONY : main23a1.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+main23a1.i: main23a1.cpp.i
+.PHONY : main23a1.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_HW1.dir/build.make CMakeFiles/DS_HW1.dir/main.cpp.i
-.PHONY : main.cpp.i
+main23a1.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_HW1.dir/build.make CMakeFiles/DS_HW1.dir/main23a1.cpp.i
+.PHONY : main23a1.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+main23a1.s: main23a1.cpp.s
+.PHONY : main23a1.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_HW1.dir/build.make CMakeFiles/DS_HW1.dir/main.cpp.s
-.PHONY : main.cpp.s
+main23a1.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DS_HW1.dir/build.make CMakeFiles/DS_HW1.dir/main23a1.cpp.s
+.PHONY : main23a1.cpp.s
 
 worldcup23a1.o: worldcup23a1.cpp.o
 .PHONY : worldcup23a1.o
@@ -240,9 +240,9 @@ help:
 	@echo "... Team.o"
 	@echo "... Team.i"
 	@echo "... Team.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... main23a1.o"
+	@echo "... main23a1.i"
+	@echo "... main23a1.s"
 	@echo "... worldcup23a1.o"
 	@echo "... worldcup23a1.i"
 	@echo "... worldcup23a1.s"

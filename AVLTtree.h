@@ -186,9 +186,12 @@ AVLNode<T> *AVLNode<T>::GetGreateParentAux(AVLNode<T> *node) {
 template<class T>
 AVLNode<T>::~AVLNode() {
     //delete data;
-   delete left_son;
-    delete right_son;
-    //this-> = nullptr;
+    if(left_son != nullptr){
+        delete left_son;
+    }
+    if(right_son != nullptr) {
+        delete right_son;
+    }
 }
 
 template<class T>
@@ -303,7 +306,7 @@ StatusType AVLTree<T>::Insert(const T &data) {
 
 template<class T>
 void AVLTree<T>::InsertAux(AVLNode<T> *node, AVLNode<T> *new_node) {
-    if (compare(node->GetValue(), new_node->GetValue()) == 1) {
+    if (compare(node->GetValue(), new_node->GetValue()) == -1) {
 
         //if we don't have a left child
         if (node->GetLeft() == nullptr) {
@@ -527,7 +530,7 @@ AVLNode<T> *AVLTree<T>::FindAux(AVLNode<T> *node, const T &value) const {
     if (compare(node->GetValue(), value) == 0) {
         return node;
     }
-    if (compare(value, node->GetValue()) == 1) {
+    if (compare(value, node->GetValue()) == -1) {
         return FindAux(node->GetRight(), value);
     } else {
         return FindAux(node->GetLeft(), value);
@@ -546,7 +549,7 @@ AVLNode<T> *AVLTree<T>::FindDad(const T &value) const {
 
 template<class T>
 AVLNode<T> *AVLTree<T>::FindDadAux(AVLNode<T> *node, const T &value) const {
-    if (compare(value, node->GetValue()) == 1) {
+    if (compare(value, node->GetValue()) == -1) {
         if(node -> GetRight() == nullptr){
             return node;
         }
@@ -600,7 +603,9 @@ AVLNode<T> *AVLTree<T>::FindMaxValInTree(AVLNode<T> *node) {
 
 template<class T>
 AVLTree<T>::~AVLTree(){
-    delete root;
+    if(this->root != nullptr){
+        delete this->root;
+    }
     //root = nullptr;
 }
 
@@ -609,7 +614,7 @@ template<class T>
 void AVLTree<T>::merge(T *arr1, T *arr2, T *merge_to, int arr1_size, int arr2_size) const {
 
     while (arr1_size != 0 && arr2_size != 0) {
-        if (compare(*arr1, *arr2) == -1) {
+        if (compare(*arr1, *arr2) == 1) {
             *merge_to = *arr1;
             arr1 = arr1 + 1;
             arr1_size = arr1_size - 1;

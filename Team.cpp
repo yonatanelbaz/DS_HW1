@@ -5,12 +5,10 @@
 #define TEAM_CPP
 #include "Team.h"
 
-
-Team::Team(int teamId, int points): teamId(teamId), points(points), teamValid(false), goalKeepers(0),
-            numPlayers(0), sumCards(0), sumGoals(0), gamesPlayed(0),
+Team::Team(int teamId, int points): teamId(teamId), points(points),numPlayers(0), teamValid(false), goalKeepers(0),
+            sumGoals(0), sumCards(0), gamesPlayed(0),
             playersById(new AVLTree<std::shared_ptr<Player>>(Player::compare_playerID)),
             playersByGoals(new AVLTree<std::shared_ptr<Player>>(Player::compare_playerGoals)){}
-
 void Team::incNumPlayers() {
     this->numPlayers++;
 }
@@ -101,11 +99,11 @@ int Team::compare_TeamID(const std::shared_ptr<Team> &team1, const std::shared_p
     int team2_id = team2->getTeamId();
 
     if (team1_id > team2_id)
-        return 1;
+        return -1;
     else if (team1_id == team2_id)
         return 0;
     else
-        return -1;
+        return 1;
 }
 void Team::decNumPlayers() {
     this->numPlayers--;
@@ -115,10 +113,21 @@ void Team::decGoalKeepers() {
 }
 
 void Team::setPlayersByGoals(AVLTree<std::shared_ptr<Player>>* playersByGoals) {
+    if (this->playersByGoals != nullptr) {
+        delete this->playersByGoals;
+    }
     this->playersByGoals = playersByGoals;
 }
 
 void Team::setPlayersById(AVLTree<std::shared_ptr<Player>>* playersById) {
+    if(this->playersById != nullptr){
+        delete this->playersById;
+    }
     this->playersById = playersById;
+}
+
+Team::~Team() {
+    delete this->playersById;
+    delete this->playersByGoals;
 }
 #endif

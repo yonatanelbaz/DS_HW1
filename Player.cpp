@@ -60,26 +60,23 @@ int Player::compare_playerID(const std::shared_ptr<Player> &player1, const std::
     int player2_id = player2->getPlayerId();
 
     if (player1_id > player2_id)
-        return 1;
+        return -1;
     else if (player1_id == player2_id)
         return 0;
     else
-        return -1;
+        return 1;
 }
 
 int Player::compare_playerGoals(const std::shared_ptr<Player> &player1, const std::shared_ptr<Player> &player2) {
-    if(player1== nullptr) {
-
-    }
     int player1_goals = player1->getPlayerGoals();
     int player2_goals = player2->getPlayerGoals();
 
     if (player1_goals > player2_goals)
-        return 1;
+        return -1;
     else if (player1_goals == player2_goals)
         return compare_playerCards(player1, player2);
     else
-        return -1;
+        return 1;
 }
 
 int Player::compare_playerCards(const std::shared_ptr<Player> &player1, const std::shared_ptr<Player> &player2) {
@@ -87,11 +84,11 @@ int Player::compare_playerCards(const std::shared_ptr<Player> &player1, const st
     int player2_cards = player2->getCards();
 
     if (player1_cards > player2_cards)
-        return -1;
+        return 1;
     else if (player1_cards == player2_cards)
         return compare_playerID(player1, player2);
     else
-        return 1;
+        return -1;
 }
 
 std::shared_ptr<Team> Player::getTeam(){
