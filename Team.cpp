@@ -9,6 +9,7 @@ Team::Team(int teamId, int points): teamId(teamId), points(points),numPlayers(0)
             sumGoals(0), sumCards(0), gamesPlayed(0),
             playersById(new AVLTree<std::shared_ptr<Player>>(Player::compare_playerID)),
             playersByGoals(new AVLTree<std::shared_ptr<Player>>(Player::compare_playerGoals)){}
+
 void Team::incNumPlayers() {
     this->numPlayers++;
 }
@@ -59,6 +60,9 @@ void Team::incGoalKeepers(){
 }
 int Team::getGamesPlayed() {
     return this -> gamesPlayed;
+}
+void Team::incGamesPlayed() {
+    this -> gamesPlayed++;
 }
 
 int Team::getMatchScore(){

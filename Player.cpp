@@ -113,7 +113,11 @@ void Player::setGamesPlayed(int games){
     this -> gamesPlayed = games;
 }
 
-void Player::addGamesPlayed(int goals){
-    this -> goals += goals;
+void Player::addGamesPlayed(int games){
+    this -> gamesPlayed += games;
+}
+
+void Player::setTeam(std::shared_ptr<Team> team){
+    this -> player_team = team;
 }
 

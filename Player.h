@@ -35,6 +35,7 @@ public:
     int getPlayerId();
     bool getGoalKeeper();
     int getTeamId();
+    void setTeam(std::shared_ptr<Team> team);
     std::shared_ptr<Team> getTeam();
     std::shared_ptr<Player> getClosestBelow();
     std::shared_ptr<Player> getClosestAbove();
@@ -42,7 +43,7 @@ public:
     void setClosestAbove(const std::shared_ptr<Player>& player);
     void setGamesPlayed(int games);
     void setGoalKeeper(bool goalKeeper);
-    void addGamesPlayed(int goals);
+    void addGamesPlayed(int games);
     Player()=default;
     void setPlayerTeam(const std::shared_ptr<Team>& t);
     ////add play dtor

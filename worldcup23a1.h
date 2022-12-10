@@ -32,6 +32,15 @@ private:
     AVLTree<std::shared_ptr<Player>> playerGoalsTree;
     int sumPlayers;
     std::weak_ptr<Player> topScorer;
+
+    int ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr);
+
+    void ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* arr, int* index);
+
+    std::shared_ptr<Player> getTopScorer();
+
+    int dist(int num1, int num2);
+
 public:
 	// <DO-NOT-MODIFY> {
 	
@@ -55,15 +64,6 @@ public:
 	output_t<int> get_num_played_games(int playerId);
 	
 	output_t<int> get_team_points(int teamId);
-    void mergeArr(std::shared_ptr<Player> arr1[], int arr1Len, std::shared_ptr<Player> arr2[], int arr2Len, std::shared_ptr<Player> arr3[], int (*comp)(const std::shared_ptr<Player> &a, const std::shared_ptr<Player> &b));
-
-    void makePlayersList(AVLNode<std::shared_ptr<Player>>* curr, int* const output, int index);
-
-    StatusType mergeTeam(std::shared_ptr<Player> team1[], std::shared_ptr<Player> team2[]);
-
-    void playersToArr(AVLNode<std::shared_ptr<Player>>* curr, std::shared_ptr<Player> arr[], int index);
-
-    void get_all_players_by_goals(std::shared_ptr<Team> t1, std::shared_ptr<Team> arr[]);
 
 	StatusType unite_teams(int teamId1, int teamId2, int newTeamId);
 
@@ -81,18 +81,6 @@ public:
 
     StatusType add_to_team_trees(const std::shared_ptr<Team>& team, const std::shared_ptr<Player>& player);
 
-    void remove_all_players(const AVLNode<shared_ptr<Player>>& node);
-
-    StatusType remove_all_teams(const AVLNode<shared_ptr<Team>>& node);
-
-    int ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr);
-
-    void ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* arr, int* index);
-
-    std::shared_ptr<Player> getTopScorer();
-
-
-    int dist(int num1, int num2);
 	// } </DO-NOT-MODIFY>
 };
 
