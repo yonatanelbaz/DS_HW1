@@ -34,17 +34,17 @@ public:
 
     void setParent(Node<T> *parent_) { parent = parent_; }
 
-    Node<T> *GetParent() const { return parent; }
+    Node<T> *getParent() const { return parent; }
 
     void setHeight(int new_height) { this->height = new_height; }
 
-    int GetHeight() const { return this->height; }
+    int getHeight() const { return this->height; }
 
-    void UpdateHeight();
+    void updateHeight();
 
-    int getBF() const;
+    int calcBalanceFactor() const;
 
-    void tree_to_arr(T *array, int *location);
+    void convertTreeToArr(T *array, int *location);
 
 };
 
@@ -55,82 +55,61 @@ class AVLTree {
 
     int (*compare)(const T &a, const T &b);
 
-    void LeftRotation(Node<T> *node);
+    void leftRotation(Node<T> *node);
 
-    void RightRotation(Node<T> *B);
+    void rightRotation(Node<T> *B);
 
-    void InsertAux(Node<T> *node, Node<T> *new_node);
+    void insertRec(Node<T> *node, Node<T> *new_node);
 
 
-    void chekRotate(Node<T> *node);
+    void checkRotate(Node<T> *node);
 
 public:
-
     explicit AVLTree(int (*comp)(const T &a, const T &b)) : root(nullptr), compare(comp) {}
-
     ~AVLTree();//TODO- change to correct destructure
-
-    Node<T> *RemoveBinary(Node<T> *to_delete, const T& value);
-
-    StatusType Insert(const T &value);
-
-    bool Remove(const T &value);
-
+    Node<T> *removeNodeNoRotations(Node<T> *to_delete, const T& value);
+    StatusType insert(const T &value);
+    Node<T> *findParentRec(Node<T> *node, const T &value) const;
+    bool remove(const T &value);
+    Node<T> *findParent(const T &value) const;
     bool empty();
-
     Node<T> *findVal(const T &value) const;
-
-    Node<T> *findValAux(Node<T> *node, const T &value) const;
-
-    Node<T> *FindDad(const T &value) const;
-
-    Node<T> *FindDadAux(Node<T> *node, const T &value) const;
-
-
     void merge(T *arr1, T *arr2, T *merge_to, int arr1_size, int arr2_size) const;
-
-    Node<T> *GetRoot();
-
-
-    static Node<T> *arr_to_tree(T *array, int start, int end, int *to_fill);
-
-    static AVLTree<T> *arr_to_tree(T *array, int start, int size, int (*comp)(const T &, const T &));
-
+    Node<T> *getRoot();
+    Node<T> *findValRec(Node<T> *node, const T &value) const;
+    static Node<T> *covertArrToTree(T *array, int start, int end, int *to_fill);
+    void convertTreeToArr(T *array);
+    static AVLTree<T> *covertArrToTree(T *array, int start, int size, int (*comp)(const T &, const T &));
     Node<T> *findMin(Node<T> *node);
-
     Node<T> *findMax(Node<T> *node);
-
-    int GetSizeAux(Node<T> *node);
-
-    void tree_to_arr(T *array);
-
+    int getSizeRec(Node<T> *node);
 };
 
 template<class T>
-void Node<T>::tree_to_arr(T *array, int *location) {
+void Node<T>::convertTreeToArr(T *array, int *location) {
     if (this->getLeft() != nullptr)
-        this->getLeft()->tree_to_arr(array, location);
+        this->getLeft()->convertTreeToArr(array, location);
     array[*location] = this->getValue();
     *location = *location + 1;
     if (this->getRight() != nullptr)
-        this->getRight()->tree_to_arr(array, location);
+        this->getRight()->convertTreeToArr(array, location);
 }
 
 template<class T>
-void Node<T>::UpdateHeight() {
+void Node<T>::updateHeight() {
     int left_height = 0;
     int right_height = 0;
 
     if (right_son == nullptr) {
         right_height = -1;
     } else {
-        right_height = right_son->GetHeight();
+        right_height = right_son->getHeight();
     }
 
     if (left_son == nullptr) {
         left_height = -1;
     } else {
-        left_height = left_son->GetHeight();
+        left_height = left_son->getHeight();
     }
 
     this->height = (std::max(left_height, right_height) + 1);
@@ -138,17 +117,17 @@ void Node<T>::UpdateHeight() {
 
 
 template<class T>
-int Node<T>::getBF() const {
+int Node<T>::calcBalanceFactor() const {
     int left_height, right_height;
     if (left_son == nullptr) {
         left_height = -1;
     } else {
-        left_height = left_son->GetHeight();
+        left_height = left_son->getHeight();
     }
     if (right_son == nullptr) {
         right_height = -1;
     } else {
-        right_height = right_son->GetHeight();
+        right_height = right_son->getHeight();
     }
     return left_height - right_height;
 }
@@ -171,7 +150,7 @@ void Node<T>::setValue(const T &new_value) {
 
 // basic rotations
 template<class T>
-void AVLTree<T>::LeftRotation(Node<T> *node) {
+void AVLTree<T>::leftRotation(Node<T> *node) {
     if (node == nullptr) { return; }
 
     Node<T> *temp_node = node->getRight();
@@ -182,27 +161,27 @@ void AVLTree<T>::LeftRotation(Node<T> *node) {
     //if(new_root->getRight() != NULL) {new_root->getRight()->setParent(root);}
     temp_node->setLeft(node);
 
-    if (node->GetParent() == nullptr) {
+    if (node->getParent() == nullptr) {
         this->root = temp_node;
     } else {
-        if (node->GetParent()->getLeft() == node) {
-            node->GetParent()->setLeft(temp_node);
+        if (node->getParent()->getLeft() == node) {
+            node->getParent()->setLeft(temp_node);
         } else {
-            node->GetParent()->setRight(temp_node);
+            node->getParent()->setRight(temp_node);
         }
     }
-    temp_node->setParent(node->GetParent());
+    temp_node->setParent(node->getParent());
     node->setParent(temp_node);
 
     if (temp_left != nullptr) {
         temp_left->setParent(node);
     }
-    node->UpdateHeight();
-    temp_node->UpdateHeight();
+    node->updateHeight();
+    temp_node->updateHeight();
 }
 
 template<class T>
-void AVLTree<T>::RightRotation(Node<T> *node) {
+void AVLTree<T>::rightRotation(Node<T> *node) {
     if (node == nullptr) { return; }
 
     Node<T> *temp_node = node->getLeft();
@@ -216,26 +195,26 @@ void AVLTree<T>::RightRotation(Node<T> *node) {
     //if(new_root->getRight() != NULL) {new_root->getRight()->setParent(root);}
     temp_node->setRight(node);
 
-    if (node->GetParent() == nullptr) {
+    if (node->getParent() == nullptr) {
         this->root = temp_node;
     } else {
-        if (node->GetParent()->getLeft() == node) {
-            node->GetParent()->setLeft(temp_node);
+        if (node->getParent()->getLeft() == node) {
+            node->getParent()->setLeft(temp_node);
         } else {
-            node->GetParent()->setRight(temp_node);
+            node->getParent()->setRight(temp_node);
         }
     }
-    temp_node->setParent(node->GetParent());
+    temp_node->setParent(node->getParent());
     node->setParent(temp_node);
 
-    node->UpdateHeight();
-    temp_node->UpdateHeight();
+    node->updateHeight();
+    temp_node->updateHeight();
 }
 
 
 //we return true if the insert succeeded
 template<class T>
-StatusType AVLTree<T>::Insert(const T &value) {
+StatusType AVLTree<T>::insert(const T &value) {
 
     //check if this value already exists
 
@@ -250,7 +229,7 @@ StatusType AVLTree<T>::Insert(const T &value) {
         if (this->root == nullptr) {
             this->root = new_node;
         } else {
-            InsertAux(this->root, new_node);
+            insertRec(this->root, new_node);
         }
 
         return StatusType::SUCCESS;
@@ -263,7 +242,7 @@ StatusType AVLTree<T>::Insert(const T &value) {
 
 
 template<class T>
-void AVLTree<T>::InsertAux(Node<T> *node, Node<T> *new_node) {
+void AVLTree<T>::insertRec(Node<T> *node, Node<T> *new_node)  {
     if (compare(node->getValue(), new_node->getValue()) == -1) {
 
         //if we don't have a left child
@@ -271,18 +250,18 @@ void AVLTree<T>::InsertAux(Node<T> *node, Node<T> *new_node) {
             node->setLeft(new_node);
             new_node->setParent(node);
         } else { //we need to keep looking in the left tree
-            InsertAux(node->getLeft(), new_node);
+            insertRec(node->getLeft(), new_node);
         }
     } else {
         if (node->getRight() == nullptr) {
             node->setRight(new_node);
             new_node->setParent(node);
         } else {
-            InsertAux(node->getRight(), new_node);
+            insertRec(node->getRight(), new_node);
         }
     }
     //the function updates the node according to the rotates that are needed
-    chekRotate(node);
+    checkRotate(node);
 
 //we need to update the height
 }
@@ -301,7 +280,7 @@ Node<T> *AVLTree<T>::findMin(Node<T> *node) {
 
 
 template <class T>
-Node<T>* AVLTree<T>::RemoveBinary(Node<T>* node, const T& value)
+Node<T>* AVLTree<T>::removeNodeNoRotations(Node<T>* node, const T& value)
 {
     Node<T>* to_delete = findVal(value);
     //start with the greatest if shrink the next conditions
@@ -327,13 +306,13 @@ Node<T>* AVLTree<T>::RemoveBinary(Node<T>* node, const T& value)
     }
 
     //All cases had the same below logic in the end - set new child to the parent
-    Node<T>* parent = to_delete->GetParent();
+    Node<T>* parent = to_delete->getParent();
     if (parent == nullptr) {
         root = big_parent;
-    } else if (to_delete->GetParent()->getLeft() == to_delete) {
-        to_delete->GetParent()->setLeft(big_parent);
+    } else if (to_delete->getParent()->getLeft() == to_delete) {
+        to_delete->getParent()->setLeft(big_parent);
     } else {
-        to_delete->GetParent()->setRight(big_parent);
+        to_delete->getParent()->setRight(big_parent);
     }
     if (big_parent != nullptr) {
         big_parent->setParent(parent);
@@ -349,34 +328,34 @@ Node<T>* AVLTree<T>::RemoveBinary(Node<T>* node, const T& value)
 
 //TODO - change all things
 template<class T>
-void AVLTree<T>::chekRotate(Node<T> *node) {
-    int balance_root = node->getBF();
+void AVLTree<T>::checkRotate(Node<T> *node)  {
+    int balance_root = node->calcBalanceFactor();
 
     //if an LL is needed
-    if (balance_root == 2 && (node->getLeft())->getBF() >= 0) {
-        RightRotation(node);
+    if (balance_root == 2 && (node->getLeft())->calcBalanceFactor() >= 0) {
+        rightRotation(node);
     //if an LR is needed
-    } else if (balance_root == 2 && (node->getLeft())->getBF() == -1) {
-        LeftRotation(node->getLeft());
-        RightRotation(node);
+    } else if (balance_root == 2 && (node->getLeft())->calcBalanceFactor() == -1) {
+        leftRotation(node->getLeft());
+        rightRotation(node);
         return;
     //if an RL is needed
-    } else if (balance_root == -2 && (node->getRight())->getBF() == 1) {
-        RightRotation(node->getRight());
-        LeftRotation(node);
+    } else if (balance_root == -2 && (node->getRight())->calcBalanceFactor() == 1) {
+        rightRotation(node->getRight());
+        leftRotation(node);
         return;
     //if an RR is needed
-    } else if (balance_root == -2 && (node->getRight())->getBF() <= 0) {
-        LeftRotation(node);
+    } else if (balance_root == -2 && (node->getRight())->calcBalanceFactor() <= 0) {
+        leftRotation(node);
         return;
     }
 
-    node->UpdateHeight();
+    node->updateHeight();
 }
 
 
 template<class T>
-bool AVLTree<T>::Remove(const T &value) {
+bool AVLTree<T>::remove(const T &value) {
     if (root == nullptr)//if root is empty
         return false;
 
@@ -388,42 +367,42 @@ bool AVLTree<T>::Remove(const T &value) {
     }
 
     //regular binary tree remove
-    Node<T> *parent_of_deleted = RemoveBinary(root, value);
+    Node<T> *parent_of_deleted = removeNodeNoRotations(root, value);
 
     while (parent_of_deleted != nullptr) {
-        chekRotate(parent_of_deleted);
-        parent_of_deleted = parent_of_deleted->GetParent();
+        checkRotate(parent_of_deleted);
+        parent_of_deleted = parent_of_deleted->getParent();
     }
     return true;
 
 }
 
 template<class T>
-int AVLTree<T>::GetSizeAux(Node<T> *node) {
+int AVLTree<T>::getSizeRec(Node<T> *node) {
     if (node == nullptr)
         return 0;
 
-    return 1 + GetSizeAux(node->getLeft()) + GetSizeAux(node->getRight());
+    return 1 + getSizeRec(node->getLeft()) + getSizeRec(node->getRight());
 }
 
 template<class T>
-void AVLTree<T>::tree_to_arr(T *array) {
+void AVLTree<T>::convertTreeToArr(T *array) {
     int location = 0;
     if (root != nullptr)
-        root->tree_to_arr(array, &location);
+        root->convertTreeToArr(array, &location);
 }
 
 template<class T>
-AVLTree<T> *AVLTree<T>::arr_to_tree(T *array, int start, int size, int (*comp)(const T &a, const T &b)) {
+AVLTree<T> *AVLTree<T>::covertArrToTree(T *array, int start, int size, int (*comp)(const T &a, const T &b)) {
     auto tree = new AVLTree<T>(comp);
     int to_fill = size;
-    tree->root = arr_to_tree(array, start, size, &to_fill);
+    tree->root = covertArrToTree(array, start, size, &to_fill);
     //tree->Validate();
     return tree;
 }
 
 template <class T>
-Node<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) {
+Node<T> *AVLTree<T>::covertArrToTree(T *array, int start, int end, int* to_fill) {
 
     if (*to_fill ==0 || start >end)
     {
@@ -445,9 +424,9 @@ Node<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) {
     }
 
 
-    Node<T>* left_son = arr_to_tree(array,start,mini_root_index-1,to_fill);
+    Node<T>* left_son = covertArrToTree(array,start,mini_root_index-1,to_fill);
 
-    Node<T>* right_son = arr_to_tree(array,mini_root_index+1,end,to_fill);
+    Node<T>* right_son = covertArrToTree(array,mini_root_index+1,end,to_fill);
 
 
 
@@ -462,7 +441,7 @@ Node<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) {
         right_son->setParent(mini_root);
     }
 
-    mini_root->UpdateHeight();
+    mini_root->updateHeight();
     return mini_root;
 
 }
@@ -471,11 +450,11 @@ Node<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) {
 template<class T>
 Node<T> *AVLTree<T>::findVal(const T &value) const {
     Node<T> *tmp = this->root;
-    return findValAux(tmp, value);
+    return findValRec(tmp, value);
 }
 
 template<class T>
-Node<T> *AVLTree<T>::findValAux(Node<T> *node, const T &value) const {
+Node<T> *AVLTree<T>::findValRec(Node<T> *node, const T &value) const {
     if (node == nullptr) {
         return nullptr;
     }
@@ -483,34 +462,34 @@ Node<T> *AVLTree<T>::findValAux(Node<T> *node, const T &value) const {
         return node;
     }
     if (compare(value, node->getValue()) == -1) {
-        return findValAux(node->getRight(), value);
+        return findValRec(node->getRight(), value);
     } else {
-        return findValAux(node->getLeft(), value);
+        return findValRec(node->getLeft(), value);
     }
 
 }
 
 template<class T>
-Node<T> *AVLTree<T>::FindDad(const T &value) const {
+Node<T> *AVLTree<T>::findParent(const T &value) const {
     Node<T> *tmp = this->root;
     if(this->root== nullptr) {
         return nullptr;
     }
-    return FindDadAux(tmp, value);
+    return findParentRec(tmp, value);
 }
 
 template<class T>
-Node<T> *AVLTree<T>::FindDadAux(Node<T> *node, const T &value) const {
+Node<T> *AVLTree<T>::findParentRec(Node<T> *node, const T &value) const {
     if (compare(value, node->getValue()) == -1) {
         if(node -> getRight() == nullptr){
             return node;
         }
-        return FindDadAux(node->getRight(), value);
+        return findParentRec(node->getRight(), value);
     } else {
         if(node -> getLeft() == nullptr){
             return node;
         }
-        return FindDadAux(node->getLeft(), value);
+        return findParentRec(node->getLeft(), value);
     }
 
 }
@@ -521,7 +500,7 @@ bool AVLTree<T>::empty() {
 }
 
 template<class T>
-Node<T> *AVLTree<T>::GetRoot() {
+Node<T> *AVLTree<T>::getRoot() {
     return this->root;
 }
 
