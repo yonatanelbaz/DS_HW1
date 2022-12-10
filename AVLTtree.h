@@ -5,36 +5,36 @@
 #include <iostream>
 #include <memory>
 template<class T>
-class AVLNode {
+class Node {
     T value;
-    AVLNode<T> *left_son;
-    AVLNode<T> *right_son;
-    AVLNode<T> *parent;
+    Node<T> *left_son;
+    Node<T> *right_son;
+    Node<T> *parent;
     int height;
 
 public:
 
-    AVLNode() : value(nullptr), left_son(nullptr), right_son(nullptr), parent(nullptr), height(0) {}
+    Node() : value(nullptr), left_son(nullptr), right_son(nullptr), parent(nullptr), height(0) {}
 
-    explicit AVLNode(const T &value) : value(value), left_son(nullptr), right_son(nullptr), parent(nullptr), height(0){}
+    explicit Node(const T &value) : value(value), left_son(nullptr), right_son(nullptr), parent(nullptr), height(0){}
 
-    ~AVLNode();
+    ~Node();
 
     T getValue() const { return value; }
 
     void setValue(const T &new_value);
 
-    void setLeft(AVLNode<T> *left) { left_son = left; }
+    void setLeft(Node<T> *left) { left_son = left; }
 
-    AVLNode<T> *getLeft() const { return left_son; }
+    Node<T> *getLeft() const { return left_son; }
 
-    void setRight(AVLNode<T> *right) { right_son = right; }
+    void setRight(Node<T> *right) { right_son = right; }
 
-    AVLNode<T> *getRight() const { return right_son; }
+    Node<T> *getRight() const { return right_son; }
 
-    void setParent(AVLNode<T> *parent_) { parent = parent_; }
+    void setParent(Node<T> *parent_) { parent = parent_; }
 
-    AVLNode<T> *GetParent() const { return parent; }
+    Node<T> *GetParent() const { return parent; }
 
     void setHeight(int new_height) { this->height = new_height; }
 
@@ -51,18 +51,18 @@ public:
 template<class T>
 class AVLTree {
 
-    AVLNode<T> *root;
+    Node<T> *root;
 
     int (*compare)(const T &a, const T &b);
 
-    void LeftRotation(AVLNode<T> *node);
+    void LeftRotation(Node<T> *node);
 
-    void RightRotation(AVLNode<T> *B);
+    void RightRotation(Node<T> *B);
 
-    void InsertAux(AVLNode<T> *node, AVLNode<T> *new_node);
+    void InsertAux(Node<T> *node, Node<T> *new_node);
 
 
-    void chekRotate(AVLNode<T> *node);
+    void chekRotate(Node<T> *node);
 
 public:
 
@@ -70,7 +70,7 @@ public:
 
     ~AVLTree();//TODO- change to correct destructure
 
-    AVLNode<T> *RemoveBinary(AVLNode<T> *to_delete, const T& value);
+    Node<T> *RemoveBinary(Node<T> *to_delete, const T& value);
 
     StatusType Insert(const T &value);
 
@@ -78,36 +78,36 @@ public:
 
     bool empty();
 
-    AVLNode<T> *findVal(const T &value) const;
+    Node<T> *findVal(const T &value) const;
 
-    AVLNode<T> *findValAux(AVLNode<T> *node, const T &value) const;
+    Node<T> *findValAux(Node<T> *node, const T &value) const;
 
-    AVLNode<T> *FindDad(const T &value) const;
+    Node<T> *FindDad(const T &value) const;
 
-    AVLNode<T> *FindDadAux(AVLNode<T> *node, const T &value) const;
+    Node<T> *FindDadAux(Node<T> *node, const T &value) const;
 
 
     void merge(T *arr1, T *arr2, T *merge_to, int arr1_size, int arr2_size) const;
 
-    AVLNode<T> *GetRoot();
+    Node<T> *GetRoot();
 
 
-    static AVLNode<T> *arr_to_tree(T *array, int start, int end, int *to_fill);
+    static Node<T> *arr_to_tree(T *array, int start, int end, int *to_fill);
 
     static AVLTree<T> *arr_to_tree(T *array, int start, int size, int (*comp)(const T &, const T &));
 
-    AVLNode<T> *findMin(AVLNode<T> *node);
+    Node<T> *findMin(Node<T> *node);
 
-    AVLNode<T> *findMax(AVLNode<T> *node);
+    Node<T> *findMax(Node<T> *node);
 
-    int GetSizeAux(AVLNode<T> *node);
+    int GetSizeAux(Node<T> *node);
 
     void tree_to_arr(T *array);
 
 };
 
 template<class T>
-void AVLNode<T>::tree_to_arr(T *array, int *location) {
+void Node<T>::tree_to_arr(T *array, int *location) {
     if (this->getLeft() != nullptr)
         this->getLeft()->tree_to_arr(array, location);
     array[*location] = this->getValue();
@@ -117,7 +117,7 @@ void AVLNode<T>::tree_to_arr(T *array, int *location) {
 }
 
 template<class T>
-void AVLNode<T>::UpdateHeight() {
+void Node<T>::UpdateHeight() {
     int left_height = 0;
     int right_height = 0;
 
@@ -138,7 +138,7 @@ void AVLNode<T>::UpdateHeight() {
 
 
 template<class T>
-int AVLNode<T>::getBF() const {
+int Node<T>::getBF() const {
     int left_height, right_height;
     if (left_son == nullptr) {
         left_height = -1;
@@ -154,7 +154,7 @@ int AVLNode<T>::getBF() const {
 }
 
 template<class T>
-AVLNode<T>::~AVLNode() {
+Node<T>::~Node() {
     //delete value;
     if(left_son != nullptr){
         delete left_son;
@@ -165,19 +165,19 @@ AVLNode<T>::~AVLNode() {
 }
 
 template<class T>
-void AVLNode<T>::setValue(const T &new_value) {
+void Node<T>::setValue(const T &new_value) {
     this->value = new_value;
 }
 
 // basic rotations
 template<class T>
-void AVLTree<T>::LeftRotation(AVLNode<T> *node) {
+void AVLTree<T>::LeftRotation(Node<T> *node) {
     if (node == nullptr) { return; }
 
-    AVLNode<T> *temp_node = node->getRight();
+    Node<T> *temp_node = node->getRight();
 
 
-    AVLNode<T> *temp_left = temp_node->getLeft();
+    Node<T> *temp_left = temp_node->getLeft();
     node->setRight(temp_left);
     //if(new_root->getRight() != NULL) {new_root->getRight()->setParent(root);}
     temp_node->setLeft(node);
@@ -202,13 +202,13 @@ void AVLTree<T>::LeftRotation(AVLNode<T> *node) {
 }
 
 template<class T>
-void AVLTree<T>::RightRotation(AVLNode<T> *node) {
+void AVLTree<T>::RightRotation(Node<T> *node) {
     if (node == nullptr) { return; }
 
-    AVLNode<T> *temp_node = node->getLeft();
+    Node<T> *temp_node = node->getLeft();
 
 
-    AVLNode<T> *temp_right = temp_node->getRight();
+    Node<T> *temp_right = temp_node->getRight();
     node->setLeft(temp_right);
     if (temp_right != nullptr) {
         temp_right->setParent(node);
@@ -244,7 +244,7 @@ StatusType AVLTree<T>::Insert(const T &value) {
     }
 
     try{
-        auto *new_node = new AVLNode<T>(value);
+        auto *new_node = new Node<T>(value);
 
         //if our tree is empty
         if (this->root == nullptr) {
@@ -263,7 +263,7 @@ StatusType AVLTree<T>::Insert(const T &value) {
 
 
 template<class T>
-void AVLTree<T>::InsertAux(AVLNode<T> *node, AVLNode<T> *new_node) {
+void AVLTree<T>::InsertAux(Node<T> *node, Node<T> *new_node) {
     if (compare(node->getValue(), new_node->getValue()) == -1) {
 
         //if we don't have a left child
@@ -290,7 +290,7 @@ void AVLTree<T>::InsertAux(AVLNode<T> *node, AVLNode<T> *new_node) {
 
 //find smallest value in tree
 template<class T>
-AVLNode<T> *AVLTree<T>::findMin(AVLNode<T> *node) {
+Node<T> *AVLTree<T>::findMin(Node<T> *node) {
     if (node == nullptr)
         return node;
 
@@ -301,16 +301,16 @@ AVLNode<T> *AVLTree<T>::findMin(AVLNode<T> *node) {
 
 
 template <class T>
-AVLNode<T>* AVLTree<T>::RemoveBinary(AVLNode<T>* node, const T& value)
+Node<T>* AVLTree<T>::RemoveBinary(Node<T>* node, const T& value)
 {
-    AVLNode<T>* to_delete = findVal(value);
+    Node<T>* to_delete = findVal(value);
     //start with the greatest if shrink the next conditions
-    AVLNode<T>* big_parent = nullptr;
+    Node<T>* big_parent = nullptr;
 
     //if to_delete has two sons
     if (to_delete->getLeft() && to_delete->getRight()) {
         //here can be minVal
-        AVLNode<T>* new_root = findMin(to_delete->getRight());
+        Node<T>* new_root = findMin(to_delete->getRight());
 
         //switching the value is soooo smart !!!
         to_delete->setValue(new_root->getValue());
@@ -327,7 +327,7 @@ AVLNode<T>* AVLTree<T>::RemoveBinary(AVLNode<T>* node, const T& value)
     }
 
     //All cases had the same below logic in the end - set new child to the parent
-    AVLNode<T>* parent = to_delete->GetParent();
+    Node<T>* parent = to_delete->GetParent();
     if (parent == nullptr) {
         root = big_parent;
     } else if (to_delete->GetParent()->getLeft() == to_delete) {
@@ -349,7 +349,7 @@ AVLNode<T>* AVLTree<T>::RemoveBinary(AVLNode<T>* node, const T& value)
 
 //TODO - change all things
 template<class T>
-void AVLTree<T>::chekRotate(AVLNode<T> *node) {
+void AVLTree<T>::chekRotate(Node<T> *node) {
     int balance_root = node->getBF();
 
     //if an LL is needed
@@ -381,14 +381,14 @@ bool AVLTree<T>::Remove(const T &value) {
         return false;
 
 
-    AVLNode<T> *to_delete = this->findVal(value);
+    Node<T> *to_delete = this->findVal(value);
     if (to_delete == nullptr)//if value needed to delete doesn't exist
     {
         return false;
     }
 
     //regular binary tree remove
-    AVLNode<T> *parent_of_deleted = RemoveBinary(root, value);
+    Node<T> *parent_of_deleted = RemoveBinary(root, value);
 
     while (parent_of_deleted != nullptr) {
         chekRotate(parent_of_deleted);
@@ -399,7 +399,7 @@ bool AVLTree<T>::Remove(const T &value) {
 }
 
 template<class T>
-int AVLTree<T>::GetSizeAux(AVLNode<T> *node) {
+int AVLTree<T>::GetSizeAux(Node<T> *node) {
     if (node == nullptr)
         return 0;
 
@@ -423,7 +423,7 @@ AVLTree<T> *AVLTree<T>::arr_to_tree(T *array, int start, int size, int (*comp)(c
 }
 
 template <class T>
-AVLNode<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) {
+Node<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) {
 
     if (*to_fill ==0 || start >end)
     {
@@ -432,7 +432,7 @@ AVLNode<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) 
 
     int mini_root_index = (start+end)/2;
 
-    auto* mini_root = new AVLNode<T>(array[mini_root_index]);
+    auto* mini_root = new Node<T>(array[mini_root_index]);
     mini_root->setParent(nullptr);
     *to_fill = *to_fill -1;
 
@@ -445,9 +445,9 @@ AVLNode<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) 
     }
 
 
-    AVLNode<T>* left_son = arr_to_tree(array,start,mini_root_index-1,to_fill);
+    Node<T>* left_son = arr_to_tree(array,start,mini_root_index-1,to_fill);
 
-    AVLNode<T>* right_son = arr_to_tree(array,mini_root_index+1,end,to_fill);
+    Node<T>* right_son = arr_to_tree(array,mini_root_index+1,end,to_fill);
 
 
 
@@ -469,13 +469,13 @@ AVLNode<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) 
 
 
 template<class T>
-AVLNode<T> *AVLTree<T>::findVal(const T &value) const {
-    AVLNode<T> *tmp = this->root;
+Node<T> *AVLTree<T>::findVal(const T &value) const {
+    Node<T> *tmp = this->root;
     return findValAux(tmp, value);
 }
 
 template<class T>
-AVLNode<T> *AVLTree<T>::findValAux(AVLNode<T> *node, const T &value) const {
+Node<T> *AVLTree<T>::findValAux(Node<T> *node, const T &value) const {
     if (node == nullptr) {
         return nullptr;
     }
@@ -491,8 +491,8 @@ AVLNode<T> *AVLTree<T>::findValAux(AVLNode<T> *node, const T &value) const {
 }
 
 template<class T>
-AVLNode<T> *AVLTree<T>::FindDad(const T &value) const {
-    AVLNode<T> *tmp = this->root;
+Node<T> *AVLTree<T>::FindDad(const T &value) const {
+    Node<T> *tmp = this->root;
     if(this->root== nullptr) {
         return nullptr;
     }
@@ -500,7 +500,7 @@ AVLNode<T> *AVLTree<T>::FindDad(const T &value) const {
 }
 
 template<class T>
-AVLNode<T> *AVLTree<T>::FindDadAux(AVLNode<T> *node, const T &value) const {
+Node<T> *AVLTree<T>::FindDadAux(Node<T> *node, const T &value) const {
     if (compare(value, node->getValue()) == -1) {
         if(node -> getRight() == nullptr){
             return node;
@@ -521,12 +521,12 @@ bool AVLTree<T>::empty() {
 }
 
 template<class T>
-AVLNode<T> *AVLTree<T>::GetRoot() {
+Node<T> *AVLTree<T>::GetRoot() {
     return this->root;
 }
 
 template<class T>
-AVLNode<T> *AVLTree<T>::findMax(AVLNode<T> *node) {
+Node<T> *AVLTree<T>::findMax(Node<T> *node) {
     if(node->getValue()== nullptr) {
         return nullptr;
     }

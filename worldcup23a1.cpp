@@ -259,7 +259,7 @@ StatusType world_cup_t::remove_player(int playerId)
         }
         playerTeam->setSumCards(playerTeam->getSumCards()-tempPlayer->getCards());
         playerTeam->setSumGoals(playerTeam->getSumGoals()-tempPlayer->getPlayerGoals());
-        AVLNode<std::shared_ptr<Player>>* maxPlayer;
+        Node<std::shared_ptr<Player>>* maxPlayer;
         if(playerTeam->getTopScorer()->getPlayerId()==tempPlayer->getPlayerId())  {
             if(!playerTeam->getPlayersByGoals()->empty()){
                 maxPlayer =  playerTeam->getPlayersByGoals()->findMax(playerTeam->getPlayersByGoals()->GetRoot());
@@ -742,7 +742,7 @@ output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
 
 }
 
-int world_cup_t::ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr) {
+int world_cup_t::ranged_teams_count(int minTeamId, int maxTeamId, Node<std::shared_ptr<Team>>* curr) {
     if(curr == nullptr){
         return 0;
     }
@@ -763,7 +763,7 @@ int world_cup_t::ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::s
     return in_range_left + in_range_count + in_range_right;
 }
 
-void world_cup_t::ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* output, int* index) {
+void world_cup_t::ranged_teams_to_arr(int minTeamId, int maxTeamId, Node<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* output, int* index) {
 
     if(curr == nullptr){
         return;

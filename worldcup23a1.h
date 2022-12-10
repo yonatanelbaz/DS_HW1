@@ -33,9 +33,9 @@ private:
     int sumPlayers;
     std::weak_ptr<Player> topScorer;
 
-    int ranged_teams_count(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr);
+    int ranged_teams_count(int minTeamId, int maxTeamId, Node<std::shared_ptr<Team>>* curr);
 
-    void ranged_teams_to_arr(int minTeamId, int maxTeamId, AVLNode<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* arr, int* index);
+    void ranged_teams_to_arr(int minTeamId, int maxTeamId, Node<std::shared_ptr<Team>>* curr, std::shared_ptr<Team>* arr, int* index);
 
     std::shared_ptr<Player> getTopScorer();
 
