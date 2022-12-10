@@ -76,11 +76,11 @@ public:
 
     bool Remove(const T &value);
 
-    bool IsEmpty();
+    bool empty();
 
     AVLNode<T> *findVal(const T &value) const;
 
-    AVLNode<T> *FindAux(AVLNode<T> *node, const T &value) const;
+    AVLNode<T> *findValAux(AVLNode<T> *node, const T &value) const;
 
     AVLNode<T> *FindDad(const T &value) const;
 
@@ -471,11 +471,11 @@ AVLNode<T> *AVLTree<T>::arr_to_tree(T *array, int start, int end, int* to_fill) 
 template<class T>
 AVLNode<T> *AVLTree<T>::findVal(const T &value) const {
     AVLNode<T> *tmp = this->root;
-    return FindAux(tmp, value);
+    return findValAux(tmp, value);
 }
 
 template<class T>
-AVLNode<T> *AVLTree<T>::FindAux(AVLNode<T> *node, const T &value) const {
+AVLNode<T> *AVLTree<T>::findValAux(AVLNode<T> *node, const T &value) const {
     if (node == nullptr) {
         return nullptr;
     }
@@ -483,9 +483,9 @@ AVLNode<T> *AVLTree<T>::FindAux(AVLNode<T> *node, const T &value) const {
         return node;
     }
     if (compare(value, node->getValue()) == -1) {
-        return FindAux(node->getRight(), value);
+        return findValAux(node->getRight(), value);
     } else {
-        return FindAux(node->getLeft(), value);
+        return findValAux(node->getLeft(), value);
     }
 
 }
@@ -516,7 +516,7 @@ AVLNode<T> *AVLTree<T>::FindDadAux(AVLNode<T> *node, const T &value) const {
 }
 
 template<class T>
-bool AVLTree<T>::IsEmpty() {
+bool AVLTree<T>::empty() {
     return this->root == nullptr;
 }
 

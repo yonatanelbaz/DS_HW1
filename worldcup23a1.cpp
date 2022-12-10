@@ -261,7 +261,7 @@ StatusType world_cup_t::remove_player(int playerId)
         playerTeam->setSumGoals(playerTeam->getSumGoals()-tempPlayer->getPlayerGoals());
         AVLNode<std::shared_ptr<Player>>* maxPlayer;
         if(playerTeam->getTopScorer()->getPlayerId()==tempPlayer->getPlayerId())  {
-            if(!playerTeam->getPlayersByGoals()->IsEmpty()){
+            if(!playerTeam->getPlayersByGoals()->empty()){
                 maxPlayer =  playerTeam->getPlayersByGoals()->findMax(playerTeam->getPlayersByGoals()->GetRoot());
                 if(maxPlayer!= nullptr) {
                     playerTeam->setTopScorer((maxPlayer->getValue()));
